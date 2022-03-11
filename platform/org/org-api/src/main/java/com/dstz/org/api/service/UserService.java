@@ -2,8 +2,12 @@ package com.dstz.org.api.service;
 
 import com.dstz.org.api.model.IUser;
 import com.dstz.org.api.model.IUserRole;
+import com.dstz.org.api.model.dto.BpmUserDTO;
+import com.dstz.org.api.model.dto.UserDTO;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <pre>
@@ -46,5 +50,45 @@ public interface UserService {
      */
 	List<? extends IUserRole> getUserRole(String userId);
 
+    List<? extends IUser> getAllUser();
 
+    List<? extends IUser> getUsersByUsername(String var1);
+
+    List<? extends IUser> getUserListByGroupPath(String var1);
+
+    IUser getUserByOpenid(String var1);
+
+    void updateUserOpenId(String var1, String var2);
+
+    Map<String, ? extends IUser> getUserByIds(String var1);
+
+    List<? extends IUser> getUsersByOrgIds(String var1);
+
+    List<? extends IUser> getUsersByRoleIds(String var1);
+
+    List<? extends IUser> getUsersByPostIds(String var1);
+
+    Integer countEnabledUser();
+
+    List<? extends IUser> getUsersByUserName(String var1, String var2, Integer var3, Integer var4);
+
+    List<? extends IUser> getUsersByOrgPath(String var1);
+
+    List<? extends IUser> getUserByAccounts(String var1);
+
+    List<? extends IUser> getUsersByGroup(String var1, String var2);
+
+    List<? extends IUser> getUsersByMobiles(String var1);
+
+//    PageResultDto getUsersByUserQuery(UserQueryDTO var1);
+
+    String addUser(UserDTO var1);
+
+    Integer editUser(UserDTO var1);
+
+    boolean isAdmin(IUser var1);
+
+    List<BpmUserDTO> getUserOrgInfos(String var1);
+
+    Map<String, String> getUserMapByUserIds(Set<String> var1);
 }

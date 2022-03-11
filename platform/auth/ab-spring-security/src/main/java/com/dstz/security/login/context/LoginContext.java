@@ -1,10 +1,16 @@
 package com.dstz.security.login.context;
 
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Resource;
 
+import cn.hutool.core.util.StrUtil;
+import com.dstz.org.api.model.IUserRole;
+import com.dstz.org.api.service.IExtendUser;
+import com.dstz.sys.util.SysPropertyUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -146,6 +152,24 @@ private static final Logger log = LoggerFactory.getLogger(LoginContext.class);
             throw new RuntimeException("系统中没有帐号[" + account + "]对应的用户");
         }
         currentUser.set(user);
+    }
+
+    public boolean isAdmin(IUser user) {
+        IExtendUser extendUser = (IExtendUser)AppUtil.getBean(IExtendUser.class);
+        if (null != extendUser) {
+            return extendUser.isAdmin(user);
+        } else {
+            String tmp = SysPropertyUtil.getByAlias("admin.account", "sa-root");
+            if (null != user && !StringUtils.isEmpty(user.getAccount())) {
+                return StrUtil.equals(tmp, user.getAccount()) || user.getAccount().startsWith("sa-");
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public List<? extends IUserRole> getCurrentRoles() {
+        return this.userService.getUserRole(this.getCurrentUserId());
     }
 
 }

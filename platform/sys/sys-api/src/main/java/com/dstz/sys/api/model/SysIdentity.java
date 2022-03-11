@@ -6,7 +6,7 @@ import java.io.Serializable;
  * 描述：流程与组织挂接实体接口
  * type : user / 其他group
  */
-public interface SysIdentity extends Serializable{
+public interface SysIdentity<T extends SysIdentity> extends Serializable, Comparable<T> {
 
     /**
      * 用户。
@@ -22,6 +22,8 @@ public interface SysIdentity extends Serializable{
     public final static String TYPE_ORG = "org";
     public final static String TYPE_POST = "post";
     public final static String TYPE_JOB = "job";
+    public final static String USER_NAME_FORMAT = "$userName";
+
 
     /**
      * 实体ID
@@ -65,6 +67,8 @@ public interface SysIdentity extends Serializable{
      * @param type void
      */
     void setType(String type);
+
+    void setOrgId(String var1);
 
     String getOrgId();
 }

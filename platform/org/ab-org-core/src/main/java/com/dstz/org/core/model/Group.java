@@ -51,6 +51,9 @@ public class Group extends BaseModel implements IGroup{
 	 *  前端字段
 	 */
 	protected String parentName;
+
+	protected String simple;
+	protected Integer userNum;
 	
 	
 	
@@ -148,10 +151,7 @@ public class Group extends BaseModel implements IGroup{
 	public  String getPath() {
 		return this.path;
 	}
-	
-	
-	
-	
+
 	public List<OrgRelation> getOrgRelationList() {
 		return orgRelationList;
 	}
@@ -192,5 +192,22 @@ public class Group extends BaseModel implements IGroup{
 	public String getGroupName() {
 		return this.name;
 	}
- 
+
+	@Override
+	public String getSimple() {
+		return simple;
+	}
+
+	public void setSimple(String simple) {
+		this.simple = simple;
+	}
+
+	@Override
+	public Integer getUserNum() {
+		return userNum;
+	}
+
+	public void setUserNum(Integer userNum) {
+		this.userNum = userNum;
+	}
 }

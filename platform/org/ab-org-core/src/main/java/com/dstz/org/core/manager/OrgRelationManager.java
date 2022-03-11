@@ -45,7 +45,7 @@ public interface OrgRelationManager extends Manager<String, OrgRelation>{
 	
 	/**
 	 * 删除 组织上的岗位
-	 * @param id
+	 * @param groupId
 	 */
 	void removeGroupPostByGroupId(String groupId);
 
@@ -93,5 +93,24 @@ public interface OrgRelationManager extends Manager<String, OrgRelation>{
 	OrgRelation getPost(String groupId);
 
 	void removeCheck(String groupId, String roleId);
-	
+
+	void removeByUserId(String var1, List<String> var2);
+
+	void removeRelationByGroupId(String var1, String var2);
+
+	void updateUserGroupRelationIsMaster(String var1, String var2, String var3);
+
+	void removeCheck(String var1);
+
+	void removeAllRelation(String var1);
+
+	void modifyUserOrg(List<OrgRelation> var1);
+
+	void modifyAllUserGroup(String var1, String var2, String var3, String var4);
+
+	void updateGroupIdByUserId(List<OrgRelation> var1, String var2);
+
+	void batchAdd(List<OrgRelation> var1);
+
+	void batchRemove(List<OrgRelation> var1);
 }

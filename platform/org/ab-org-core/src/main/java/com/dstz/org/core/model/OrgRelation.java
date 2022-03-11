@@ -48,7 +48,21 @@ public class OrgRelation extends BaseModel{
 	protected String userAccount;
 	protected String roleName;
 	protected String roleAlias;
-	
+	protected String hasChild;
+	protected String photo;
+	protected String sex;
+	protected String isMasters;
+	protected String mobile;
+	protected String sn;
+	protected String oldGroupId;
+	protected String postId;
+	protected String postName;
+	protected String unitId;
+	protected String unitName;
+	protected Integer userStatus;
+	protected Integer userActiveStatus;
+	protected Date userCreateTime;
+	protected String parentOrgName;
 	/**
 	 * 岗位使用的时候调用
 	 * @return
@@ -197,10 +211,118 @@ public class OrgRelation extends BaseModel{
 	public void setUserAccount(String userAccount) {
 		this.userAccount = userAccount;
 	}
-	
-	
-	
-	
-	
- 
+
+
+
+
+	public OrgRelation(String groupId, String userId, String type) {
+		this.groupId = groupId;
+		this.userId = userId;
+		this.type = type;
+	}
+
+	public String getUnitId() {
+		return this.unitId;
+	}
+
+	public void setUnitId(String unitId) {
+		this.unitId = unitId;
+	}
+
+	public String getUnitName() {
+		return this.unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
+
+	public String getPhoto() {
+		return this.photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public String getSex() {
+		return this.sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getMobile() {
+		return this.mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getSn() {
+		return this.sn;
+	}
+
+	public void setSn(String sn) {
+		this.sn = sn;
+	}
+
+	public String getIsMasters() {
+		return this.isMasters;
+	}
+
+	public void setIsMasters(String isMasters) {
+		this.isMasters = isMasters;
+	}
+
+	public String getOldGroupId() {
+		return this.oldGroupId;
+	}
+
+	public void setOldGroupId(String oldGroupId) {
+		this.oldGroupId = oldGroupId;
+	}
+
+	public Integer getUserStatus() {
+		return this.userStatus;
+	}
+
+	public void setUserStatus(Integer userStatus) {
+		this.userStatus = userStatus;
+	}
+
+	public Integer getUserActiveStatus() {
+		return this.userActiveStatus;
+	}
+
+	public void setUserActiveStatus(Integer userActiveStatus) {
+		this.userActiveStatus = userActiveStatus;
+	}
+
+	public Date getUserCreateTime() {
+		return this.userCreateTime;
+	}
+
+	public void setUserCreateTime(Date userCreateTime) {
+		this.userCreateTime = userCreateTime;
+	}
+
+	public String getHasChild() {
+		return this.hasChild;
+	}
+
+	public void setHasChild(String hasChild) {
+		this.hasChild = hasChild;
+	}
+
+	public String getParentOrgName() {
+		return this.parentOrgName;
+	}
+
+	public void setParentOrgName(String parentOrgName) {
+		this.parentOrgName = parentOrgName;
+	}
+
 }

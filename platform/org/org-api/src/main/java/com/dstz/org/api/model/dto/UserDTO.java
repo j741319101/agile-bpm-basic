@@ -1,8 +1,11 @@
 package com.dstz.org.api.model.dto;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.dstz.org.api.model.IUser;
+import com.dstz.org.api.model.IUserRole;
 
 
 /**
@@ -11,6 +14,8 @@ import com.dstz.org.api.model.IUser;
  * </pre>
  */
 public class UserDTO implements IUser{
+
+    private static final long serialVersionUID = -700694295167942753L;
 
     /**	
      * id_
@@ -82,6 +87,22 @@ public class UserDTO implements IUser{
      * 组织ID，用于在组织下添加用户。
      */
     protected String groupId = "";
+    public static final String FROM_SYSTEM = "system";
+    public static final String FROM_HUMAN_RESOURCE = "humanResource";
+    protected String telephone;
+    protected String openid;
+    protected Integer sn;
+    protected String orgId;
+    protected String orgName;
+    protected String orgCode;
+    protected String postId;
+    protected String postName;
+    protected String postCode;
+    protected String fristLogin;
+    protected List<IUserRole> roles;
+    protected List<RelationDTO> orgRelationList;
+    protected String type;
+    protected List<String> managerGroupIdList;
     
 	public void setId(String id) {
         this.id = id;
@@ -280,5 +301,131 @@ public class UserDTO implements IUser{
 
     public void setGroupId(String groupId) {
         this.groupId = groupId;
+    }
+
+
+    public UserDTO() {
+        this.from = "system";
+    }
+
+    public UserDTO(String account) {
+        this.account = account;
+    }
+
+    public UserDTO fromHumanResource() {
+        this.from = "humanResource";
+        return this;
+    }
+
+    public String getTelephone() {
+        return this.telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getOpenid() {
+        return this.openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public Integer getSn() {
+        return this.sn;
+    }
+
+    public void setSn(Integer sn) {
+        this.sn = sn;
+    }
+
+    public String getOrgId() {
+        return this.orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getPostId() {
+        return this.postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public List<IUserRole> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(List<IUserRole> roles) {
+        this.roles = roles;
+    }
+
+    public List<RelationDTO> getOrgRelationList() {
+        return this.orgRelationList;
+    }
+
+    public void setOrgRelationList(List<RelationDTO> orgRelationList) {
+        this.orgRelationList = orgRelationList;
+    }
+
+    public String getOrgName() {
+        return this.orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getPostName() {
+        return this.postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<String> getManagerGroupIdList() {
+        return this.managerGroupIdList;
+    }
+
+    public void setManagerGroupIdList(List<String> managerGroupIdList) {
+        this.managerGroupIdList = managerGroupIdList;
+    }
+
+    public String getFristLogin() {
+        return this.fristLogin;
+    }
+
+    public void setFristLogin(String fristLogin) {
+        this.fristLogin = fristLogin;
+    }
+
+    public String getOrgCode() {
+        return this.orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
+    }
+
+    public String getPostCode() {
+        return this.postCode;
+    }
+
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
     }
 }

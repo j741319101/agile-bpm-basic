@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dstz.org.core.dao.PostDao">
+    <resultMap id="Post" type="com.dstz.org.core.model.Post">
+        <id property="id" column="id_" jdbcType="VARCHAR"/>
+        <result property="name" column="name_" jdbcType="VARCHAR"/>
+        <result property="code" column="code_" jdbcType="VARCHAR"/>
+        <result property="type" column="type_" jdbcType="VARCHAR"/>
+        <result property="desc" column="desc_" jdbcType="VARCHAR"/>
+        <result property="isCivilServant" column="is_civil_servant_" jdbcType="VARCHAR"/>
+        <result property="level" column="level_" jdbcType="VARCHAR"/>
+        <result property="orgId" column="org_id_" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time_" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by_" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time_" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by_" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="tableName">
+        org_post
+    </sql>
+
+    <sql id="forUpdate">
+        <if test="name != null">
+            name_ = #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="code != null">
+            code_ = #{code,jdbcType=VARCHAR},
+        </if>
+        <if test="type != null">
+            type_ = #{type,jdbcType=VARCHAR},
+        </if>
+        <if test="desc != null">
+            desc_ = #{desc,jdbcType=VARCHAR},
+        </if>
+        <if test="isCivilServant != null">
+            is_civil_servant_ = #{isCivilServant,jdbcType=VARCHAR},
+        </if>
+        <if test="level != null">
+            level_ = #{level,jdbcType=VARCHAR},
+        </if>
+        <if test="orgId != null">
+            org_id_ = #{orgId,jdbcType=VARCHAR},
+        </if>
+        <if test="updateBy != null">
+            update_by_ = #{updateBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updateTime != null">
+            update_time_ = #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+    </sql>
+
+    <insert id="create" parameterType="cn.gwssi.ecloudframework.org.core.model.Post">
+        INSERT INTO
+        <include refid="tableName"/>
+        (id_,name_,code_,type_,desc_,is_civil_servant_,level_,org_id_,create_time_,create_by_,update_time_,update_by_)
+        VALUES
+        (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+        #{desc,jdbcType=VARCHAR}, #{isCivilServant,jdbcType=VARCHAR}, #{level,jdbcType=VARCHAR},#{orgId,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP},
+        #{updateBy,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="get" parameterType="java.lang.String" resultMap="Post">
+        SELECT * FROM
+        <include refid="tableName"/>
+        WHERE
+        id_=#{id}
+    </select>
+
+    <select id="query" parameterType="java.util.Map" resultMap="Post">
+        SELECT
+        <if test="resultType==null">
+            distinct tpost.*
+        </if>
+        <if test="resultType=='onlyGroupId'">
+            distinct tpost.id_
+        </if>
+        <if test="resultType=='onlyGroupName'">
+            distinct tpost.id_,tpost.name_
+        </if>
+        <if test="resultType=='withUserNum'">
+            distinct tpost.*,groupUserNum.num as userNum
+        </if>
+        FROM
+        <include refid="tableName"/>
+        tpost
+        <if test="userId != null">
+            inner join org_relation trelation on tpost.id_ = trelation.group_id_
+            and trelation.status_ =1
+            and trelation.user_id_ = #{userId}
+        </if>
+        <if test="resultType=='withUserNum'">
+            LEFT JOIN (
+            SELECT
+            zz.ID_,
+            count(1) AS num
+            FROM
+            (
+            SELECT
+            b.GROUP_ID_ as ID_,
+            b.user_id_
+            FROM
+            org_post a,
+            ORG_RELATION b,
+            ORG_USER c
+            WHERE
+            a.ID_ = b.GROUP_ID_
+            AND b.USER_ID_ = c.ID_
+            AND c.status_ = '1'
+            AND c.ACTIVE_STATUS_ = '1'
+            AND c.TYPE_ = '1'
+            ) zz GROUP BY zz.ID_
+            ) groupUserNum ON tpost.ID_ = groupUserNum.ID_
+        </if>
+        <where>
+            <if test="whereSql!=null">
+                ${whereSql}
+            </if>
+            <if test="excludeUserId != null">
+                and tpost.id_ not in (
+                select trelation.group_id_ from org_relation trelation where trelation.user_id_ = #{excludeUserId}
+                and trelation.group_id_ is not null
+                )
+            </if>
+        </where>
+        <if test="orderBySql!=null">
+            ORDER BY ${orderBySql}
+        </if>
+        <if test="orderBySql==null">
+            ORDER BY create_time_ desc
+        </if>
+    </select>
+
+    <update id="update" parameterType="cn.gwssi.ecloudframework.org.core.model.Post">
+        UPDATE
+        <include refid="tableName"/>
+        SET
+        name_=#{name,jdbcType=VARCHAR},
+        code_=#{code,jdbcType=VARCHAR},
+        type_=#{type,jdbcType=VARCHAR},
+        desc_=#{desc,jdbcType=VARCHAR},
+        is_civil_servant_=#{isCivilServant,jdbcType=VARCHAR},
+        level_=#{level,jdbcType=VARCHAR},
+        org_id_=#{orgId},
+        update_time_=#{updateTime,jdbcType=TIMESTAMP},
+        update_by_=#{updateBy,jdbcType=VARCHAR}
+        WHERE
+        id_=#{id}
+    </update>
+
+    <delete id="remove" parameterType="java.lang.String">
+        DELETE FROM
+        <include refid="tableName"/>
+        WHERE
+        id_=#{id}
+    </delete>
+
+    <update id="updateByPrimaryKeySelective" parameterType="cn.gwssi.ecloudframework.org.core.model.Post">
+        update
+        <include refid="tableName"/>
+        <set>
+            <include refid="forUpdate"/>
+        </set>
+        where id_ = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getByCode" parameterType="map" resultMap="Post">
+        SELECT * FROM
+        <include refid="tableName"/>
+        WHERE
+        code_=#{code}
+        <if test="excludeId!=null">
+            and id_ != #{excludeId}
+        </if>
+    </select>
+</mapper>

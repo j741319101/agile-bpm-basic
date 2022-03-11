@@ -2,7 +2,9 @@ package com.dstz.org.api.context;
 
 import com.dstz.org.api.model.IGroup;
 import com.dstz.org.api.model.IUser;
+import com.dstz.org.api.model.IUserRole;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -14,7 +16,7 @@ public interface ICurrentContext {
      * 当前岗位
      */
     public static final String CURRENT_ORG = "current_org";
-
+    String CURRENT_USER = "current_user";
     /**
      * 获取当当前登录用户
      *
@@ -77,4 +79,7 @@ public interface ICurrentContext {
      */
     void clearLocale();
 
+    boolean isAdmin(IUser var1);
+
+    List<? extends IUserRole> getCurrentRoles();
 }

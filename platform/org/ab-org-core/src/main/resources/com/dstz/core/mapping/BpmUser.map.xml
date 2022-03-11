@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dstz.org.core.dao.BpmUserDao">
+    <resultMap id="User" type="com.dstz.org.core.model.User">
+        <id property="id" column="id_" jdbcType="VARCHAR"/>
+        <result property="fullname" column="fullname_" jdbcType="VARCHAR"/>
+        <result property="account" column="account_" jdbcType="VARCHAR"/>
+        <result property="sn" column="sn_" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getUserListByOrgId" parameterType="java.lang.String" resultMap="User">
+        SELECT tuser.ID_,
+               tuser.ACCOUNT_,
+               tuser.FULLNAME_,
+               case when (trel.SN_ is not null) then trel.SN_ else tuser.sn_ end as sn_,
+               tgroup.ID_   as orgId,
+               tgroup.NAME_ as orgName,
+               tgroup.CODE_ as orgCOde
+        FROM ORG_USER tuser,
+             ORG_RELATION trel,
+             ORG_GROUP tgroup
+        WHERE tuser.id_ = trel.USER_ID_
+          AND trel.TYPE_ = 'groupUser'
+          AND trel.GROUP_ID_ = tgroup.ID_
+          AND tuser.STATUS_='1'
+          AND tgroup.id_ = #{groupId}
+    </select>
+
+    <select id="getUserListByRelation" parameterType="map" resultMap="User">
+        SELECT tuser.ID_,
+               tuser.ACCOUNT_,
+               tuser.FULLNAME_,
+               case when (trel.SN_ is not null) then trel.SN_ else tuser.sn_ end as sn_,
+               tgroup.ID_   as orgId,
+               tgroup.NAME_ as orgName,
+               tgroup.CODE_ as orgCOde
+        FROM ORG_USER tuser,
+             ORG_RELATION trel,
+             ORG_GROUP tgroup,
+             ORG_RELATION trel1
+        WHERE tuser.id_ = trel.USER_ID_
+          AND trel.TYPE_ = 'groupUser'
+          AND trel.GROUP_ID_ = tgroup.ID_
+          AND tuser.id_ = trel1.USER_ID_
+          AND tuser.STATUS_='1'
+          AND trel1.GROUP_ID_ = #{groupId}
+          AND trel1.TYPE_ = #{type}
+    </select>
+
+    <select id="query" parameterType="java.util.Map" resultMap="User">
+        SELECT
+        <if test="resultType==null">
+            tuser.ID_,
+            tuser.ACCOUNT_,
+            tuser.FULLNAME_,
+            case when (trelation.SN_ is not null) then trelation.SN_ else tuser.sn_ end as sn_,
+            torg.ID_   as orgId,
+            torg.NAME_ as orgName,
+            torg.CODE_ as orgCOde
+        </if>
+        FROM
+        org_user tuser
+        inner join ORG_RELATION trelation on tuser.id_ = trelation.user_id_ and trelation.TYPE_='groupUser'
+        inner join ORG_GROUP torg on trelation.group_id_ = torg.id_
+        <if test="orgIds!=null">
+            <if test="orgHasChild==null||orgHasChild==false">
+                and torg.id_ in
+                <foreach collection="orgIds" item="orgId" index="index" open="(" close=")" separator=",">
+                    #{orgId}
+                </foreach>
+            </if>
+            <if test="orgHasChild==true">
+                inner join ORG_GROUP torgM on torg.PATH_ like concat(torgM.PATH_,'%') and torgM.id_ in
+                <foreach collection="orgIds" item="orgId" index="index" open="(" close=")" separator=",">
+                    #{orgId}
+                </foreach>
+            </if>
+        </if>
+        <if test="orgCodes!=null">
+            <if test="orgHasChild==null||orgHasChild==false">
+                and torg.code_ in
+                <foreach collection="orgCodes" item="orgCode" index="index" open="(" close=")" separator=",">
+                    #{orgCode}
+                </foreach>
+            </if>
+            <if test="orgHasChild==true">
+                inner join ORG_GROUP torgC on torg.PATH_ like concat(torgC.PATH_,'%') and torgC.id_ in
+                <foreach collection="orgCodes" item="orgCode" index="index" open="(" close=")" separator=",">
+                    #{orgCode}
+                </foreach>
+            </if>
+        </if>
+        <if test="orgPath!=null">
+            and torg.PATH_ like #{orgPath}
+        </if>
+        <where>
+            <if test="whereSql!=null">
+                ${whereSql}
+            </if>
+            <if test="roleIds!=null">
+                and exists (select 1 from ORG_RELATION trelationRole where tuser.ID_=trelationRole.USER_ID_
+                and trelationRole.TYPE_='userRole' and trelationRole.GROUP_ID_ in
+                <foreach collection="roleIds" item="roleId" index="index" open="(" close=")" separator=",">
+                    #{roleId}
+                </foreach>)
+            </if>
+            <if test="roleCodes!=null">
+                and exists (select 1 from ORG_RELATION trelationRole
+                inner join org_role trole on trelationRole.GROUP_ID_ = trole.ID_
+                where tuser.ID_=trelationRole.USER_ID_
+                and trelationRole.TYPE_='userRole' and trole.alias_ in
+                <foreach collection="roleCodes" item="roleCode" index="index" open="(" close=")" separator=",">
+                    #{roleCode}
+                </foreach>)
+            </if>
+            <if test="postIds!=null">
+                and exists (select 1 from ORG_RELATION trelationPost where tuser.ID_=trelationPost.USER_ID_
+                and torg.ID_ = trelationPost.ORG_ID_
+                and trelationPost.TYPE_='postUser' and trelationPost.GROUP_ID_ in
+                <foreach collection="postIds" item="postId" index="index" open="(" close=")" separator=",">
+                    #{postId}
+                </foreach>)
+            </if>
+            <if test="postCodes!=null">
+                and exists (select 1 from ORG_RELATION trelationPost
+                inner join org_post tpost on trelationPost.GROUP_ID_ = tpost.ID_
+                where tuser.ID_=trelationPost.USER_ID_
+                and torg.ID_ = trelationPost.ORG_ID_
+                and trelationPost.TYPE_='postUser' and tpost.code_ in
+                <foreach collection="postCodes" item="postCode" index="index" open="(" close=")" separator=",">
+                    #{postCode}
+                </foreach>)
+            </if>
+            AND tuser.STATUS_='1'
+        </where>
+        <if test="orderBySql!=null">
+            ORDER BY ${orderBySql}
+        </if>
+        <if test="orderBySql==null">
+            ORDER BY tuser.id_ DESC
+        </if>
+    </select>
+    <select id="getUserOrgInfos" parameterType="java.util.Map" resultType="com.dstz.org.api.model.dto.BpmUserDTO">
+        SELECT
+        tuser.ID_ userId,
+        case when (trel.SN_ is not null) then trel.SN_ else tuser.sn_ end as userSn,
+        tgroup.ID_ AS orgId,
+        tgroup.NAME_ AS orgName,
+        tgroup.TYPE_ as  orgType,
+        tgroup.code_ as  orgCode,
+        tgroup.SN_ as orgSn,
+        tgroupP.ID_ AS parentOrgId,
+        tgroupP.NAME_ AS parentOrgName,
+        tgroupP.TYPE_ AS parentOrgType,
+        tgroupP.code_ as parentOrgCode,
+        tgroupP.SN_ AS parentOrgSn
+        FROM
+        ORG_USER tuser
+        INNER JOIN ORG_RELATION trel ON tuser.ID_ = trel.USER_ID_
+        INNER JOIN ORG_GROUP tgroup ON trel.GROUP_ID_ = tgroup.ID_
+        LEFT JOIN ORG_GROUP tgroupP ON tgroup.PARENT_ID_ = tgroupP.ID_
+        where tuser.ID_ in
+        <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+        AND tuser.STATUS_='1'
+    </select>
+    <select id="getOrgInfos" parameterType="java.util.Map" resultType="com.dstz.org.api.model.dto.BpmOrgDTO">
+        SELECT
+        tgroup.ID_ AS orgId,
+        tgroup.NAME_ AS orgName,
+        tgroup.TYPE_ as  orgType,
+        tgroup.code_ as  orgCode,
+        tgroup.SN_ as orgSn,
+        tgroupP.ID_ AS parentOrgId,
+        tgroupP.NAME_ AS parentOrgName,
+        tgroupP.TYPE_ AS parentOrgType,
+        tgroupP.code_ as parentOrgCode,
+        tgroupP.SN_ AS parentOrgSn
+        FROM
+        ORG_GROUP tgroup
+        LEFT JOIN ORG_GROUP tgroupP ON tgroup.PARENT_ID_ = tgroupP.ID_
+        where tgroup.ID_ in
+        <foreach collection="orgIds" item="orgId" index="index" open="(" close=")" separator=",">
+            #{orgId}
+        </foreach>
+    </select>
+
+    <select id="getUserListByPostId" parameterType="java.lang.String" resultMap="User">
+        SELECT tuser.ID_,
+               tuser.ACCOUNT_,
+               tuser.FULLNAME_,
+               case when (trel.SN_ is not null) then trel.SN_ else tuser.sn_ end as sn_,
+               tgroup.ID_   as orgId,
+               tgroup.NAME_ as orgName,
+               tgroup.CODE_ as orgCOde
+        FROM ORG_USER tuser,
+             ORG_RELATION trel,
+             ORG_GROUP tgroup,
+             ORG_RELATION trel1
+        WHERE tuser.id_ = trel.USER_ID_
+          AND trel.TYPE_ = 'groupUser'
+          AND trel.GROUP_ID_ = tgroup.ID_
+          AND tuser.id_ = trel1.USER_ID_
+          AND trel1.GROUP_ID_ = #{postId}
+          AND trel1.org_id_ = trel.GROUP_ID_
+          AND tuser.STATUS_='1'
+          AND trel1.TYPE_ = 'postUser'
+    </select>
+</mapper>

@@ -1,65 +1,312 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dstz.org.core.dao.OrgRelationDao">
-	<resultMap id="OrgRelation" type="com.dstz.org.core.model.OrgRelation">
-		<id property="id" column="id_" jdbcType="VARCHAR"/>
-		<result property="groupId" column="group_id_" jdbcType="VARCHAR"/>
-		<result property="userId" column="user_id_" jdbcType="VARCHAR"/>
-		<result property="isMaster" column="is_master_" jdbcType="NUMERIC"/>
-		<result property="roleId" column="role_id_" jdbcType="VARCHAR"/>
-		<result property="type" column="type_" jdbcType="VARCHAR"/>
-		<result property="status" column="status_" jdbcType="VARCHAR"/>
-		<result property="createTime" column="create_time_" jdbcType="TIMESTAMP"/>
-		<result property="createBy" column="create_by_" jdbcType="VARCHAR"/>
-		<result property="updateTime" column="update_time_" jdbcType="TIMESTAMP"/>
-		<result property="updateBy" column="update_by_" jdbcType="VARCHAR"/>
-		<result property="groupName" column="groupName" jdbcType="VARCHAR"/>
-		<result property="roleName" column="roleName" jdbcType="VARCHAR"/>
-		<result property="roleAlias" column="roleAlias" jdbcType="VARCHAR"/>
-		<result property="userName" column="userName" jdbcType="VARCHAR"/>
-		<result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
-	</resultMap>
-	
-	<insert id="create" parameterType="com.dstz.org.core.model.OrgRelation">
+    <!--<resultMap id="OrgRelation" type="com.dstz.org.core.model.OrgRelation">
+        <id property="id" column="id_" jdbcType="VARCHAR"/>
+        <result property="groupId" column="group_id_" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id_" jdbcType="VARCHAR"/>
+        <result property="isMaster" column="is_master_" jdbcType="NUMERIC"/>
+        <result property="roleId" column="role_id_" jdbcType="VARCHAR"/>
+        <result property="type" column="type_" jdbcType="VARCHAR"/>
+        <result property="status" column="status_" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time_" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by_" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time_" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by_" jdbcType="VARCHAR"/>
+        <result property="groupName" column="groupName" jdbcType="VARCHAR"/>
+        <result property="roleName" column="roleName" jdbcType="VARCHAR"/>
+        <result property="roleAlias" column="roleAlias" jdbcType="VARCHAR"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.dstz.org.core.model.OrgRelation">
+        INSERT INTO org_relation
+        (id_,group_id_,user_id_,is_master_,role_id_,type_,status_,create_time_,create_by_,update_time_,update_by_)
+        VALUES
+        (#{id,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{isMaster,jdbcType=NUMERIC}, #{roleId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},1, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="get"   parameterType="java.lang.String" resultMap="OrgRelation">
+        SELECT * FROM org_relation
+        WHERE
+        id_=#{id}
+    </select>
+
+    <select id="query" parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.role_id_ = role.id_
+        <where>
+            <if test="whereSql!=null">
+                ${whereSql}
+            </if>
+        </where>
+        <if test="orderBySql!=null">
+            ORDER BY ${orderBySql}
+        </if>
+        <if test="orderBySql==null">
+            ORDER BY relation.id_ DESC
+        </if>
+    </select>
+
+    <update id="update" parameterType="com.dstz.org.core.model.OrgRelation">
+        UPDATE org_relation SET
+        group_id_=#{groupId,jdbcType=VARCHAR},
+        user_id_=#{userId,jdbcType=VARCHAR},
+        is_master_=#{isMaster,jdbcType=NUMERIC},
+        role_id_=#{roleId,jdbcType=VARCHAR},
+        type_=#{type,jdbcType=VARCHAR},
+        status_=#{status,jdbcType=VARCHAR},
+        create_time_=#{createTime,jdbcType=TIMESTAMP},
+        create_by_=#{createBy,jdbcType=VARCHAR},
+        update_time_=#{updateTime,jdbcType=TIMESTAMP},
+        update_by_=#{updateBy,jdbcType=VARCHAR}
+        WHERE
+        id_=#{id}
+    </update>
+
+    <delete id="remove" parameterType="java.lang.String">
+        DELETE FROM org_relation
+        WHERE
+        id_=#{id}
+    </delete>
+
+    <delete id="removeByUserId" parameterType="java.lang.String">
+        DELETE FROM org_relation
+        WHERE
+        user_id_=#{userId}
+    </delete>
+
+
+    <select id="getUserRelation"   parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.role_id_ = role.id_
+        WHERE relation.user_id_ = #{userId} and relation.status_ = 1
+        <if test="relationType != null and relationType != ''"> and relation.type_ = #{relationType}</if>
+    </select>
+
+
+
+    <select id="getCountByRelation" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*)  FROM org_relation
+        WHERE 1 = 1
+        <if test="id != null and id != ''"> and id_ != #{id} </if>
+        <if test="userId != null and userId != ''"> and user_id_ = #{userId} </if>
+        <if test="groupId != null and groupId != ''"> and group_id_ = #{groupId} </if>
+        <if test="roleId != null and roleId != ''"> and role_id_ = #{roleId} </if>
+
+    </select>
+
+    <select id="getRelationsByParam"   parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.role_id_ = role.id_
+        WHERE relation.status_ = 1
+        <if test="userId !=null and userId != ''"> and relation.user_id_ = #{userId} </if>
+        <if test="groupId !=null and groupId != ''"> and relation.group_id_ = #{groupId} </if>
+        <if test="roleId !=null and roleId != ''"> and relation.role_id_ = #{roleId} </if>
+        <if test="relationTypes != null and relationTypes.size()>0">
+             and  relation.type_ in
+             <foreach collection="relationTypes" item="type" index="index" open="(" close=")" separator=",">
+                <trim prefix="#{" suffix="}">type</trim>
+             </foreach>
+         </if>
+    </select>
+
+    <select id="getUserRole"   parameterType="java.lang.String" resultMap="OrgRelation">
+        SELECT relation.*,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName ,role.alias_ as roleAlias
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_role role on relation.role_id_ = role.id_
+        WHERE relation.status_ = 1 and role.enabled_ = 1
+        and relation.user_id_ = #{userId}
+        and  relation.type_ in ('userRole','groupUserRole')
+    </select>
+
+
+    <select id="getPost"   parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,role.name_ roleName
+        FROM org_relation relation
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.role_id_ = role.id_
+        WHERE relation.id_ = #{groupId}
+        and  relation.type_ = 'groupRole'
+    </select>
+-->
+    <resultMap id="OrgRelation" type="com.dstz.org.core.model.OrgRelation">
+        <id property="id" column="id_" jdbcType="VARCHAR"/>
+        <result property="groupId" column="group_id_" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id_" jdbcType="VARCHAR"/>
+        <result property="isMaster" column="is_master_" jdbcType="INTEGER"/>
+        <result property="type" column="type_" jdbcType="VARCHAR"/>
+        <result property="status" column="status_" jdbcType="INTEGER"/>
+        <result property="hasChild" column="has_child_" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time_" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by_" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time_" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by_" jdbcType="VARCHAR"/>
+        <result property="groupName" column="groupName" jdbcType="VARCHAR"/>
+        <result property="roleName" column="roleName" jdbcType="VARCHAR"/>
+        <result property="roleAlias" column="roleAlias" jdbcType="VARCHAR"/>
+        <result property="photo" column="photo_" jdbcType="VARCHAR"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex_" jdbcType="VARCHAR"/>
+        <result property="isMasters" column="isMasters" jdbcType="VARCHAR"/>
+        <result property="sn" column="sn_" jdbcType="INTEGER"/>
+        <result property="userStatus" column="userStatus" jdbcType="INTEGER"/>
+        <result property="roleId" column="roleId" jdbcType="VARCHAR"/>
+        <result property="postId" column="postId" jdbcType="VARCHAR"/>
+        <result property="postName" column="postName" jdbcType="VARCHAR"/>
+        <result property="unitId" column="unitId" jdbcType="VARCHAR"/>
+        <result property="unitName" column="unitName" jdbcType="VARCHAR"/>
+        <result property="userActiveStatus" column="userActiveStatus" jdbcType="INTEGER"/>
+        <result property="userCreateTime" column="userCreateTime" jdbcType="TIMESTAMP"/>
+        <result property="parentOrgName" column="parentOrgName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getGroupPost"   parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,role.name_ roleName
+        FROM org_relation relation
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.role_id_ = role.id_
+        WHERE relation.group_id_ = #{groupId}  and relation.status_ = 1
+        and  relation.type_ = 'groupRole'
+    </select>
+
+    <delete id="removeGroupPostByGroupId" parameterType="java.lang.String">
+        DELETE FROM org_relation
+        WHERE
+        group_id_=#{groupId} and type_ = 'groupRole'
+    </delete>
+    <delete id="removeAllRelation" parameterType="java.lang.String">
+        DELETE FROM org_relation
+        WHERE
+        type_=#{relationType}
+    </delete>
+
+    <sql id="tableName">
+        org_relation
+    </sql>
+
+    <sql id="forUpdate">
+        <if test="groupId != null">
+            group_id_ = #{groupId,jdbcType=VARCHAR},
+        </if>
+        <if test="userId != null">
+            user_id_ = #{userId,jdbcType=VARCHAR},
+        </if>
+        <if test="isMaster != null">
+            is_master_ = #{isMaster,jdbcType=INTEGER},
+        </if>
+        <if test="type != null">
+            type_ = #{type,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            status_ = #{status,jdbcType=VARCHAR},
+        </if>
+        <if test="sn != null">
+            sn_ = #{sn,jdbcType=INTEGER},
+        </if>
+        <if test="hasChild != null">
+            has_child_ = #{hasChild,jdbcType=VARCHAR},
+        </if>
+        <if test="updateBy != null">
+            update_by_ = #{updateBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updateTime != null">
+            update_time_ = #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+    </sql>
+
+    <insert id="create" parameterType="com.dstz.org.core.model.OrgRelation">
 		INSERT INTO org_relation
-		(id_,group_id_,user_id_,is_master_,role_id_,type_,status_,create_time_,create_by_,update_time_,update_by_)
-		VALUES 
-		(#{id,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{isMaster,jdbcType=NUMERIC}, #{roleId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},1, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
+		(id_,group_id_,user_id_,is_master_,type_,status_,sn_,has_child_,create_time_,create_by_,update_time_,update_by_)
+		VALUES
+		(#{id,jdbcType=VARCHAR}, #{groupId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{isMaster,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},1,#{sn,jdbcType=INTEGER},#{hasChild,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
 	</insert>
-	
-	<select id="get"   parameterType="java.lang.String" resultMap="OrgRelation">
-		SELECT * FROM org_relation 
-		WHERE 
+
+    <select id="get" parameterType="java.lang.String" resultMap="OrgRelation">
+		SELECT * FROM org_relation
+		WHERE
 		id_=#{id}
 	</select>
-	
-	<select id="query" parameterType="java.util.Map" resultMap="OrgRelation">
-		SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName 
-		FROM org_relation relation 
-		left join org_user tuser on relation.user_id_ = tuser.id_
-		left join org_group tgroup on relation.group_id_ = tgroup.id_
-		left join org_role role on relation.role_id_ = role.id_
-		<where>
-			<if test="whereSql!=null">
-				${whereSql}
-			</if>
-		</where>
-		<if test="orderBySql!=null">
-			ORDER BY ${orderBySql}
-		</if>
-		<if test="orderBySql==null">
-			ORDER BY relation.id_ DESC
-		</if>
-	</select>
-	
-	<update id="update" parameterType="com.dstz.org.core.model.OrgRelation">
+
+    <select id="query" parameterType="java.util.Map" resultMap="OrgRelation">
+        <if test="relationType!=null">
+            <if test="relationType=='groupUser'">
+                select groupUser.USER_ID_,max(groupName) as groupName,max(userName) as userName,max(userAccount) as
+                userAccount,max(mobile) as mobile
+                ,max(sn) as sn_,max(userStatus) as userStatus,max(userActiveStatus) as
+                userActiveStatus,max(userCreateTime) as userCreateTime from (
+            </if>
+        </if>
+        SELECT distinct relation.*,WM_CONCAT(tgroup.name_) over (partition by USER_ID_ order by tuser.CREATE_TIME_
+        desc,IS_MASTER_ desc) as groupName,tuser.fullname_ userName,tuser.account_ userAccount,tuser.mobile_
+        mobile,tuser.sn_ sn,role.name_ roleName,tuser.status_ as userStatus,tpost.id_ as postId,tpost.name_ as
+        postName,tuser.active_status_ as userActiveStatus,tuser.CREATE_TIME_ as userCreateTime
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.group_id_ = role.id_
+        left join org_post tpost on relation.group_id_ = tpost.id_ and relation.TYPE_='postUser'
+
+        <where>
+            <if test="whereSql!=null">
+                ${whereSql}
+            </if>
+        </where>
+        <if test="orderBySql!=null">
+            ORDER BY ${orderBySql}
+        </if>
+        <if test="orderBySql==null">
+            <include refid="queryDefaultOrder"/>
+        </if>
+        <if test="relationType!=null">
+            <if test="relationType=='groupUser'">
+                ) groupUser
+                group by groupUser.USER_ID_
+                <include refid="queryGroupUserOrder"/>
+            </if>
+        </if>
+    </select>
+    <sql id="queryDefaultOrder" databaseId="kingbase">
+        ORDER BY relation.sn_
+    </sql>
+    <sql id="queryDefaultOrder" databaseId="highgo">
+        ORDER BY relation.sn_
+    </sql>
+    <sql id="queryDefaultOrder">
+        ORDER BY isnull(relation.sn_), relation.sn_
+    </sql>
+    <sql id="queryGroupUserOrder" databaseId="kingbase">
+                order by sn_
+    </sql>
+    <sql id="queryGroupUserOrder" databaseId="highgo">
+                order by sn_
+    </sql>
+    <sql id="queryGroupUserOrder">
+                order by isnull(sn_), sn_
+    </sql>
+
+    <update id="update" parameterType="com.dstz.org.core.model.OrgRelation">
 		UPDATE org_relation SET
 		group_id_=#{groupId,jdbcType=VARCHAR},
 		user_id_=#{userId,jdbcType=VARCHAR},
-		is_master_=#{isMaster,jdbcType=NUMERIC},
-		role_id_=#{roleId,jdbcType=VARCHAR},
+		is_master_=#{isMaster,jdbcType=INTEGER},
 		type_=#{type,jdbcType=VARCHAR},
-		status_=#{status,jdbcType=VARCHAR},
+		status_=#{status,jdbcType=INTEGER},
+		sn_=#{sn,jdbcType=INTEGER},
+		has_child_=#{hasChild,jdbcType=VARCHAR},
 		create_time_=#{createTime,jdbcType=TIMESTAMP},
 		create_by_=#{createBy,jdbcType=VARCHAR},
 		update_time_=#{updateTime,jdbcType=TIMESTAMP},
@@ -67,90 +314,124 @@
 		WHERE
 		id_=#{id}
 	</update>
-	
-	<delete id="remove" parameterType="java.lang.String">
-		DELETE FROM org_relation 
+
+    <delete id="remove" parameterType="java.lang.String">
+		DELETE FROM org_relation
 		WHERE
 		id_=#{id}
 	</delete>
-	
-	<delete id="removeByUserId" parameterType="java.lang.String">
-		DELETE FROM org_relation 
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.dstz.org.core.model.OrgRelation">
+        update
+        org_relation
+        <set>
+            <include refid="forUpdate"/>
+        </set>
+        where id_ = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="removeByUserId" parameterType="map">
+        DELETE FROM
+        <include refid="tableName"/>
+        WHERE
+        user_id_=#{userId}
+        <if test="relationTypes != null and relationTypes.size()>0">
+            and type_ in
+            <foreach collection="relationTypes" item="type" index="index" open="(" close=")" separator=",">
+                <trim prefix="#{" suffix="}">type</trim>
+            </foreach>
+        </if>
+    </delete>
+
+    <delete id="removeRelationByGroupId" parameterType="java.lang.String">
+		DELETE FROM org_relation
 		WHERE
-		user_id_=#{userId}
+		group_id_=#{groupId}
+		and type_=#{groupType}
 	</delete>
-	
-	<delete id="removeGroupPostByGroupId" parameterType="java.lang.String">
-		DELETE FROM org_relation 
-		WHERE
-		group_id_=#{groupId} and type_ = 'groupRole'
-	</delete>
-	
-	<select id="getUserRelation"   parameterType="java.util.Map" resultMap="OrgRelation">
-		SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName 
-		FROM org_relation relation 
-		left join org_user tuser on relation.user_id_ = tuser.id_
-		left join org_group tgroup on relation.group_id_ = tgroup.id_
-		left join org_role role on relation.role_id_ = role.id_
-		WHERE relation.user_id_ = #{userId} and relation.status_ = 1
-		<if test="relationType != null and relationType != ''"> and relation.type_ = #{relationType}</if>
-	</select>
-	
-	<select id="getGroupPost"   parameterType="java.util.Map" resultMap="OrgRelation">
-		SELECT relation.*,tgroup.name_ groupName,role.name_ roleName 
-		FROM org_relation relation 
-		left join org_group tgroup on relation.group_id_ = tgroup.id_
-		left join org_role role on relation.role_id_ = role.id_
-		WHERE relation.group_id_ = #{groupId}  and relation.status_ = 1
-		and  relation.type_ = 'groupRole'
-	</select>
-	
-	<select id="getCountByRelation" parameterType="java.util.Map" resultType="java.lang.Integer">
-		SELECT count(*)  FROM org_relation  
-		WHERE 1 = 1 
-		<if test="id != null and id != ''"> and id_ != #{id} </if>
-		<if test="userId != null and userId != ''"> and user_id_ = #{userId} </if>
-		<if test="groupId != null and groupId != ''"> and group_id_ = #{groupId} </if>
-		<if test="roleId != null and roleId != ''"> and role_id_ = #{roleId} </if>
-		
-	</select>
-	
-	<select id="getRelationsByParam"   parameterType="java.util.Map" resultMap="OrgRelation">
-		SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName 
-		FROM org_relation relation 
-		left join org_user tuser on relation.user_id_ = tuser.id_
-		left join org_group tgroup on relation.group_id_ = tgroup.id_
-		left join org_role role on relation.role_id_ = role.id_
-		WHERE relation.status_ = 1
-		<if test="userId !=null and userId != ''"> and relation.user_id_ = #{userId} </if>
-		<if test="groupId !=null and groupId != ''"> and relation.group_id_ = #{groupId} </if>
-		<if test="roleId !=null and roleId != ''"> and relation.role_id_ = #{roleId} </if>
-		<if test="relationTypes != null and relationTypes.size()>0">
-			 and  relation.type_ in 
-			 <foreach collection="relationTypes" item="type" index="index" open="(" close=")" separator=",">
-				<trim prefix="#{" suffix="}">type</trim>
-			 </foreach>
-		 </if>
-	</select>
-	
-	<select id="getUserRole"   parameterType="java.lang.String" resultMap="OrgRelation">
+
+    <select id="getUserRelation" parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_
+        roleName,role.alias_ as roleAlias,tpost.id_ as postId,tpost.name_ as postName
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.group_id_ = role.id_
+        left join org_post tpost on relation.group_id_ = tpost.id_ and relation.TYPE_='postUser'
+        WHERE relation.user_id_ = #{userId} and relation.status_ = 1
+        <if test="relationType != null and relationType != ''">and relation.type_ = #{relationType}</if>
+    </select>
+
+    <select id="getCountByRelation" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) FROM org_relation
+        WHERE 1 = 1
+        <if test="id != null and id != ''">and id_ != #{id}</if>
+        <if test="userId != null and userId != ''">and user_id_ = #{userId}</if>
+        <if test="groupId != null and groupId != ''">and group_id_ = #{groupId}</if>
+        <if test="roleId != null and roleId != ''">and group_id_ = #{roleId}</if>
+        <if test="type != null and type != ''">and type_ = #{type}</if>
+
+    </select>
+
+    <select id="getRelationsByParam" parameterType="java.util.Map" resultMap="OrgRelation">
+        SELECT relation.*,tgroup.name_ groupName,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName
+        FROM org_relation relation
+        left join org_user tuser on relation.user_id_ = tuser.id_
+        left join org_group tgroup on relation.group_id_ = tgroup.id_
+        left join org_role role on relation.group_id_ = role.id_
+        WHERE relation.status_ = 1
+        <if test="userId !=null and userId != ''">and relation.user_id_ = #{userId}</if>
+        <if test="groupId !=null and groupId != ''">and relation.group_id_ = #{groupId}</if>
+        <if test="roleId !=null and roleId != ''">and relation.group_id_ = #{roleId}</if>
+        <if test="relationTypes != null and relationTypes.size()>0">
+            and relation.type_ in
+            <foreach collection="relationTypes" item="type" index="index" open="(" close=")" separator=",">
+                <trim prefix="#{" suffix="}">type</trim>
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getUserRole" parameterType="java.lang.String" resultMap="OrgRelation">
 		SELECT relation.*,tuser.fullname_ userName,tuser.account_ userAccount,role.name_ roleName ,role.alias_ as roleAlias
-		FROM org_relation relation 
+		FROM org_relation relation
 		left join org_user tuser on relation.user_id_ = tuser.id_
-		left join org_role role on relation.role_id_ = role.id_
+		left join org_role role on relation.group_id_ = role.id_
 		WHERE relation.status_ = 1 and role.enabled_ = 1
 		and relation.user_id_ = #{userId}
 		and  relation.type_ in ('userRole','groupUserRole')
 	</select>
-	
-	
-	<select id="getPost"   parameterType="java.util.Map" resultMap="OrgRelation">
-		SELECT relation.*,tgroup.name_ groupName,role.name_ roleName 
-		FROM org_relation relation 
+
+
+    <select id="getPost" parameterType="java.util.Map" resultMap="OrgRelation">
+		SELECT relation.*,tgroup.name_ groupName,role.name_ roleName
+		FROM org_relation relation
 		left join org_group tgroup on relation.group_id_ = tgroup.id_
-		left join org_role role on relation.role_id_ = role.id_
+		left join org_role role on relation.group_id_ = role.id_
 		WHERE relation.id_ = #{groupId}
 		and  relation.type_ = 'groupRole'
 	</select>
-	
+
+    <delete id="deleteRelationByUserIdAndType" parameterType="map">
+		DELETE FROM org_relation
+		WHERE
+		user_id_=#{userId}
+		and type_=#{type}
+		and group_id_ = #{oldGroupId}
+	</delete>
+
+    <update id="updateGroupId" parameterType="com.dstz.org.core.model.OrgRelation">
+		UPDATE org_relation SET
+		group_id_=#{groupId,jdbcType=VARCHAR}
+		WHERE
+		id_=#{id}
+	</update>
+
+    <update id="updateGroupIdByUserId" parameterType="com.dstz.org.core.model.OrgRelation">
+		UPDATE org_relation SET
+		group_id_=#{groupId,jdbcType=VARCHAR}
+		WHERE
+		user_id_ = #{userId}
+		and type_ = #{type}
+	</update>
+
 </mapper>

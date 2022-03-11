@@ -74,6 +74,10 @@ public class Role extends BaseModel implements IGroup {
     public Integer getEnabled() {
         return this.enabled;
     }
+    private Integer sn;
+    protected String simple;
+    protected Integer userNum;
+    protected String parentName;
 
     /**
      * @see java.lang.Object#toString()
@@ -96,8 +100,12 @@ public class Role extends BaseModel implements IGroup {
         return this.alias;
     }
 
-    public Long getSn() {
-        return Long.valueOf(1);
+    public Integer getSn() {
+        return this.sn;
+    }
+
+    public void setSn(Integer sn) {
+        this.sn = sn;
     }
 
     public String getGroupType() {
@@ -129,4 +137,31 @@ public class Role extends BaseModel implements IGroup {
 	public String getGroupName() {
 		return this.name;
 	}
+
+    @Override
+    public String getSimple() {
+        return simple;
+    }
+
+    public void setSimple(String simple) {
+        this.simple = simple;
+    }
+
+    @Override
+    public Integer getUserNum() {
+        return userNum;
+    }
+
+    public void setUserNum(Integer userNum) {
+        this.userNum = userNum;
+    }
+
+    @Override
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
 }
