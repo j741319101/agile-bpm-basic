@@ -53,6 +53,10 @@ public class BusinessPermission extends BaseModel implements IBusinessPermission
 	 * </pre>
 	 */
 	private Map<String, BusObjPermission> busObjMap = new HashMap<>();
+	private String boKey;
+	private String defId;
+	private JSONObject tablePermission;
+	private JSONObject permission = null;
 
 	@Override
 	public String getObjType() {
@@ -118,8 +122,6 @@ public class BusinessPermission extends BaseModel implements IBusinessPermission
 	/**
 	 *   readOnly 类型的降级处理 比如在某个节点的实例表单中。 权限需要将w b 改成r 用来展示历史表单
 	 */
-	private JSONObject tablePermission;
-	private JSONObject permission = null;
 	private synchronized void handlePermission(Boolean isReadonly) {
 		if(permission != null) return;
 		
@@ -130,5 +132,37 @@ public class BusinessPermission extends BaseModel implements IBusinessPermission
 			IBusObjPermission busObjPermission = entry.getValue();
 			busObjPermission.handlePermission(tablePermission, permission, isReadonly);
 		}
+	}
+
+	public String getBoKey() {
+		return boKey;
+	}
+
+	public void setBoKey(String boKey) {
+		this.boKey = boKey;
+	}
+
+	public String getDefId() {
+		return defId;
+	}
+
+	public void setDefId(String defId) {
+		this.defId = defId;
+	}
+
+	public JSONObject getTablePermission() {
+		return tablePermission;
+	}
+
+	public void setTablePermission(JSONObject tablePermission) {
+		this.tablePermission = tablePermission;
+	}
+
+	public JSONObject getPermission() {
+		return permission;
+	}
+
+	public void setPermission(JSONObject permission) {
+		this.permission = permission;
 	}
 }

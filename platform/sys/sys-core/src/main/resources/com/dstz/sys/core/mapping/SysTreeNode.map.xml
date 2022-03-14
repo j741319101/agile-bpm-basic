@@ -71,5 +71,18 @@
 		path_ like #{path}
 	</delete>
 
+	<update id="chageOrder" parameterType="com.dstz.sys.api.model.SysNodeOrderParam">
+		update sys_tree_node set sn_=#{sn,jdbcType=NUMERIC} where id_=#{id}
+	</update>
+
+	<select id="getCountByStartWithPath" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT count(*) FROM sys_tree_node
+		WHERE
+			path_ like #{path,jdbcType=VARCHAR}
+	</select>
+	<delete id="removeAll" parameterType="java.lang.String">
+		DELETE
+		FROM sys_tree_node
+	</delete>
 
 </mapper>

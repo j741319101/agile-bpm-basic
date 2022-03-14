@@ -14,5 +14,9 @@
             <groupId>com.dstz.agilebpm</groupId>
             <artifactId>base-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
     </dependencies>
 </project>

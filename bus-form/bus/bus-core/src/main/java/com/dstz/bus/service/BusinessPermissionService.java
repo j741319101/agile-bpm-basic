@@ -1,11 +1,10 @@
 package com.dstz.bus.service;
 
-import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONArray;
+import java.util.Map;
+
 import com.dstz.base.core.util.StringUtil;
 import com.dstz.base.core.util.ThreadMapUtil;
 import com.dstz.bus.api.constant.RightsType;
@@ -18,85 +17,85 @@ import com.dstz.bus.model.permission.BusColumnPermission;
 import com.dstz.bus.model.permission.BusObjPermission;
 import com.dstz.bus.model.permission.BusTablePermission;
 import com.dstz.sys.api.permission.PermissionCalculatorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
 
 @Service
-public class BusinessPermissionService implements IBusinessPermissionService {
+public class BusinessPermissionService implements IBusinessPermissionService
+{
 	@Autowired
 	BusinessPermissionManager businessPermissionManager;
 	@Autowired
 	BusinessObjectManager businessObjectManager;
 
-	@Override
-	public BusinessPermission getByObjTypeAndObjVal(String objType, String objVal, String defalutBoKeys, boolean calculate) {
+	public BusinessPermission getByObjTypeAndObjVal(String defId, String objType, String objVal, String defalutBoKeys, boolean calculate) {
 		BusinessPermission businessPermission = null;
 		if (StringUtil.isNotEmpty(defalutBoKeys)) {
-			businessPermission = businessPermissionManager.getByObjTypeAndObjVal(objType, objVal, defalutBoKeys);
+			businessPermission = this.businessPermissionManager.getByObjTypeAndObjVal(defId, objType, objVal, defalutBoKeys);
 		} else {
-			businessPermission = businessPermissionManager.getByObjTypeAndObjVal(objType, objVal);
+			businessPermission = this.businessPermissionManager.getByObjTypeAndObjVal(defId, objType, objVal);
 		}
-		if(businessPermission == null) {
+		if (businessPermission == null) {
 			return new BusinessPermission();
 		}
-		
+
 		if (calculate) {
 			calculateResult(businessPermission);
 		}
 		return businessPermission;
 	}
 
-	private void calculateResult(BusinessPermission businessPermission) {
 
-		for (Entry<String, BusObjPermission> entry : businessPermission.getBusObjMap().entrySet()) {
+	private void calculateResult(BusinessPermission businessPermission) {
+		for (Map.Entry<String, BusObjPermission> entry : (Iterable<Map.Entry<String, BusObjPermission>>)businessPermission.getBusObjMap().entrySet()) {
 			BusObjPermission busObjPermission = entry.getValue();
-			calculateResult(busObjPermission);
-			for (Entry<String, BusTablePermission> etry : busObjPermission.getTableMap().entrySet()) {
+			calculateResult((AbstractPermission)busObjPermission);
+			for (Map.Entry<String, BusTablePermission> etry : (Iterable<Map.Entry<String, BusTablePermission>>)busObjPermission.getTableMap().entrySet()) {
 				BusTablePermission busTablePermission = etry.getValue();
-				// 自身为空则设置为上级bo的权限
+
 				if (CollectionUtil.isEmpty(busTablePermission.getRights())) {
 					busTablePermission.setResult(busObjPermission.getResult());
 				} else {
-					calculateResult(busTablePermission);
+					calculateResult((AbstractPermission)busTablePermission);
 				}
 
-				for (Entry<String, BusColumnPermission> ery : busTablePermission.getColumnMap().entrySet()) {
+				for (Map.Entry<String, BusColumnPermission> ery : (Iterable<Map.Entry<String, BusColumnPermission>>)busTablePermission.getColumnMap().entrySet()) {
 					BusColumnPermission busColumnPermission = ery.getValue();
-					// 自身为空则设置为上级table的权限
-					if (MapUtil.isEmpty(busColumnPermission.getRights())) {
-						busColumnPermission.setResult(busTablePermission.getResult());
-					} else {
-						calculateResult(busColumnPermission);
-					}
 
+					if (MapUtil.isEmpty(busColumnPermission.getRights())) {
+						busColumnPermission.setResult(busTablePermission.getResult()); continue;
+					}
+					calculateResult((AbstractPermission)busColumnPermission);
 				}
 			}
 		}
 	}
 
-	/**
-	 * <pre>
-	 * 计算AbstractPermission对于当前系统用户的结果
-	 * </pre>
-	 * 
-	 * @param permission
-	 */
+
+
+
+
+
+
+
+
+
 	private void calculateResult(AbstractPermission permission) {
 		for (RightsType rightsType : RightsType.values()) {
-			JSONArray jsonArray = permission.getRights().get(rightsType.getKey());
+			JSONArray jsonArray = (JSONArray)permission.getRights().get(rightsType.getKey());
 			boolean b = PermissionCalculatorFactory.haveRights(jsonArray);
 			if (b) {
 				permission.setResult(rightsType.getKey());
+
 				break;
 			}
 		}
-		// 没计算出结果，则默认最后一个
 		if (StringUtil.isEmpty(permission.getResult())) {
-			permission.setResult(RightsType.values()[RightsType.values().length - 1].getKey());
+			permission.setResult(RightsType.values()[(RightsType.values()).length - 1].getKey());
 		}
-		
-		//清空权限使用到的线程变量
-		ThreadMapUtil.remove("com.dstz.sys.permission.impl.GroupPermission");
+
+
+		ThreadMapUtil.remove("cn.gwssi.ecloudbpm.sys.permission.impl.GroupPermission");
 	}
 }

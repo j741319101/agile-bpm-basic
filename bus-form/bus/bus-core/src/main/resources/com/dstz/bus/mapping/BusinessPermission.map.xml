@@ -61,6 +61,27 @@
 		SELECT * FROM bus_permission 
 		WHERE 
 		obj_type_=#{objType} and obj_val_=#{objVal}
+		<if test="defId!=null and defId!=''">
+			and def_id_ = #{defId}
+		</if>
 	</select>
-	
+
+	<delete id="removeByBpmDefKey" parameterType="java.lang.String">
+		DELETE FROM bus_permission
+		WHERE
+		obj_type_=#{objType} and bo_key_ = #{boKey}
+		and def_id_ = #{defId}
+	</delete>
+	<delete id="removeNotInBpmNode" parameterType="java.util.Map">
+		DELETE FROM bus_permission
+		WHERE
+		bo_key_ = #{boKey} and OBJ_VAL_ not in
+		<foreach collection="nodeIds" index="index" item="node" open="(" separator="," close=")">#{node}</foreach>
+		and def_id_ = #{defId}
+	</delete>
+	<delete id="removeByDefId" parameterType="java.lang.String">
+		DELETE FROM bus_permission
+		WHERE
+		      def_id_ = #{defId}
+	</delete>
 </mapper>

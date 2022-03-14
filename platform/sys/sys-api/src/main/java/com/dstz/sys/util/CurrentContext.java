@@ -13,33 +13,25 @@ import com.dstz.org.api.model.IUser;
  */
 @Component
 public class CurrentContext implements ICurrentContext {
-	@Override
+	public CurrentContext() {
+	}
+
 	public String getCurrentUserId() {
 		return ContextUtil.getCurrentUserId();
 	}
-	
-	@Override
+
 	public String getCurrentUserName() {
 		IUser user = ContextUtil.getCurrentUser();
-		return user != null ?  user.getFullname() : null;
-				
+		return user != null ? user.getFullname() : null;
 	}
-	
-	@Override
+
 	public String getCurrentGroupId() {
 		return ContextUtil.getCurrentGroupId();
-    }
-	
-	
-	@Override
+	}
+
 	public String getCurrentGroupName() {
 		IGroup group = ContextUtil.getCurrentGroup();
-		return group != null ?  group.getGroupName() : null;
-    }
-	
-	
-	
-	
-	
+		return group != null ? group.getGroupName() : null;
+	}
 
 }

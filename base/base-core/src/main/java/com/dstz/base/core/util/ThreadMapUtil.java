@@ -53,7 +53,16 @@ public class ThreadMapUtil {
 	public static void remove() {
 		threadLocalMap.remove();
 	}
-	
+
+	public static Object removeGet(String key) {
+		Object obj = get(key);
+		map().remove(key);
+		if (map().isEmpty()) {
+			threadLocalMap.remove();
+		}
+
+		return obj;
+	}
 	public static Object getOrDefault(String key, Object defaultValue) {
 		return map().getOrDefault(key, defaultValue);
 	}
@@ -68,5 +77,8 @@ public class ThreadMapUtil {
 	 */
 	public static Object computeIfAbsent(String key, Function<? super String, ? extends Object> mappingFunction) {
 		return map().computeIfAbsent(key, mappingFunction);
+	}
+	public static Map getMap() {
+		return (Map)threadLocalMap.get();
 	}
 }

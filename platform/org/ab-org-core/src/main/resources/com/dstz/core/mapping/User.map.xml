@@ -9,6 +9,7 @@
         <result property="email" column="email_" jdbcType="VARCHAR"/>
         <result property="mobile" column="mobile_" jdbcType="VARCHAR"/>
         <result property="weixin" column="weixin_" jdbcType="VARCHAR"/>
+        <result property="openid" column="openid_" jdbcType="VARCHAR"/>
         <result property="address" column="address_" jdbcType="VARCHAR"/>
         <result property="photo" column="photo_" jdbcType="VARCHAR"/>
         <result property="sex" column="sex_" jdbcType="VARCHAR"/>
@@ -18,89 +19,339 @@
         <result property="createBy" column="create_by_" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time_" jdbcType="TIMESTAMP"/>
         <result property="updateBy" column="update_by_" jdbcType="VARCHAR"/>
+        <result property="sn" column="sn_" jdbcType="INTEGER"/>
+        <result property="telephone" column="telephone_" jdbcType="VARCHAR"/>
+        <result property="activeStatus" column="active_status_" jdbcType="INTEGER"/>
+        <result property="secretLevel" column="secret_level_" jdbcType="INTEGER"/>
+        <result property="type" column="type_" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <sql id="tableName">
+        org_user
+    </sql>
+
+    <sql id="forUpdate">
+        <if test="fullname != null">
+            fullname_ = #{fullname,jdbcType=VARCHAR},
+        </if>
+        <if test="account != null">
+            account_ = #{account,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null">
+            password_ = #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null">
+            email_ = #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="mobile != null">
+            mobile_ = #{mobile,jdbcType=VARCHAR},
+        </if>
+        <if test="weixin != null">
+            weixin_ = #{weixin,jdbcType=VARCHAR},
+        </if>
+        <if test="openid!=null">
+            openid_ = #{openid,jdbcType=VARCHAR},
+        </if>
+        <if test="address != null">
+            address_ = #{address,jdbcType=VARCHAR},
+        </if>
+        <if test="photo != null">
+            photo_ = #{photo,jdbcType=VARCHAR},
+        </if>
+        <if test="sex != null">
+            sex_ = #{sex,jdbcType=VARCHAR},
+        </if>
+        <if test="from != null">
+            from_ = #{from,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            status_ = #{status,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null">
+            create_time_ = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="createBy != null">
+            create_by_ = #{createBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updateBy != null">
+            update_by_ = #{updateBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updateTime != null">
+            update_time_ = now(),
+        </if>
+        <if test="sn != null">
+            sn_=#{sn,jdbcType=INTEGER},
+        </if>
+        <if test="telephone != null">
+            telephone_=#{telephone,jdbcType=VARCHAR},
+        </if>
+        <if test="activeStatus != null">
+            active_status_=#{activeStatus,jdbcType=INTEGER},
+        </if>
+        <if test="secretLevel != null">
+            secret_level_=#{secretLevel,jdbcType=INTEGER},
+        </if>
+        <if test="type != null">
+            type_=#{type,jdbcType=VARCHAR},
+        </if>
+    </sql>
+
     <insert id="create" parameterType="com.dstz.org.core.model.User">
-		INSERT INTO org_user
-		(id_,fullname_,account_,password_,email_,mobile_,weixin_,address_,photo_,sex_,from_,status_,create_time_,create_by_,update_time_,update_by_)
-		VALUES 
-		(#{id,jdbcType=VARCHAR}, #{fullname,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{weixin,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR},
-		 #{sex,jdbcType=VARCHAR}, #{from,jdbcType=VARCHAR}, #{status,jdbcType=NUMERIC}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR})
-	</insert>
+        INSERT INTO
+        <include refid="tableName"/>
+        (id_,fullname_,account_,password_,email_,mobile_,weixin_,address_,photo_,sex_,from_,status_,create_time_,create_by_,update_time_,update_by_,sn_,telephone_,active_status_,secret_level_,type_)
+        VALUES
+        (#{id,jdbcType=VARCHAR}, #{fullname,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+        #{weixin,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR}, #{photo,jdbcType=VARCHAR},
+        #{sex,jdbcType=VARCHAR}, #{from,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
+        #{sn,jdbcType=INTEGER}, #{telephone,jdbcType=VARCHAR}, #{activeStatus,jdbcType=INTEGER},
+        #{secretLevel,jdbcType=INTEGER},#{type,jdbcType=VARCHAR})
+    </insert>
 
     <select id="get" parameterType="java.lang.String" resultMap="User">
-		SELECT * FROM org_user 
-		WHERE 
-		id_=#{id}
-	</select>
+        SELECT * FROM
+        <include refid="tableName"/>
+        WHERE
+        id_=#{id}
+    </select>
 
     <select id="getByAccount" parameterType="java.lang.String" resultMap="User">
-		SELECT * FROM org_user  WHERE  account_=#{account}
-	</select>
-	
-	<!-- 获取角色用户，组织用户 -->
-	<select id="getUserListByRelation" parameterType="java.util.Map" resultMap="User">
-		SELECT distinct orgUser.* FROM org_user orgUser
-		left join org_relation relation on relation.user_id_ = orgUser.id_ 
-		where
-		<if test="relationType.equals('groupUser')"> relation.group_id_ = #{relationId}</if>
-		<if test="relationType.equals('userRole')"> relation.role_id_ = #{relationId}</if>
-	</select>
-	
-	<select id="getUserListByPost" parameterType="java.util.Map" resultMap="User">
-		SELECT orgUser.* FROM org_user orgUser  
-		left join org_relation relation on relation.user_id_ = orgUser.id_
-		WHERE  relation.type_ = 'groupUserRole'
-		and relation.group_id_ = #{groupId}
-		and relation.role_id_ = #{roleId}
-	</select>
-	
+        SELECT * FROM
+        <include refid="tableName"/>
+        WHERE account_=#{account}
+    </select>
+
+    <!-- 获取角色用户，组织用户 -->
+    <select id="getUserListByRelation" parameterType="java.util.Map" resultMap="User">
+        SELECT distinct orgUser.* FROM
+        <include refid="tableName"/>
+        orgUser
+        inner join org_relation relation on relation.user_id_ = orgUser.id_
+        where
+        relation.group_id_ = #{relationId}
+        and relation.type_ = #{relationType}
+        <include refid="getUserListByRelationOrder"/>
+    </select>
+    <sql id="getUserListByRelationOrder" databaseId="kingbase">
+        ORDER BY orgUser.sn_
+    </sql>
+    <sql id="getUserListByRelationOrder" databaseId="highgo">
+        ORDER BY orgUser.sn_
+    </sql>
+    <sql id="getUserListByRelationOrder">
+        ORDER BY isnull(orgUser.sn_), orgUser.sn_
+    </sql>
 
     <select id="query" parameterType="java.util.Map" resultMap="User">
-        SELECT * FROM org_user
+        SELECT
+        <if test="resultType==null">
+            tuser.*
+        </if>
+        <if test="resultType=='onlyUserId'">
+            tuser.id_
+        </if>
+        <if test="resultType=='onlyUserUserName'">
+            tuser.id_,tuser.fullname_
+        </if>
+        <if test="resultType=='onlyUserAccount'">
+            tuser.id_,tuser.account_
+        </if>
+        FROM
+        <include refid="tableName"/>
+        tuser
         <where>
             <if test="whereSql!=null">
                 ${whereSql}
+            </if>
+            <if test="orgIds!=null">
+                and exists (select 1 from ORG_RELATION trelationOrg
+                <if test="orgHasChild==null||orgHasChild==false">
+                    INNER JOIN ORG_GROUP torgC on trelationOrg.GROUP_ID_ = torgC.ID_ and torgC.id_ in
+                    <foreach collection="orgIds" item="orgId" index="index" open="(" close=")" separator=",">
+                        #{orgId}
+                    </foreach>
+                </if>
+                <if test="orgHasChild==true">
+                    INNER JOIN ORG_GROUP torgC on trelationOrg.GROUP_ID_ = torgC.ID_
+                    inner join ORG_GROUP torgM on torgC.PATH_ like concat(torgM.PATH_,'%') and torgM.id_ in
+                    <foreach collection="orgIds" item="orgId" index="index" open="(" close=")" separator=",">
+                        #{orgId}
+                    </foreach>
+                </if>
+                where tuser.ID_=trelationOrg.USER_ID_
+                and trelationOrg.TYPE_='groupUser'
+                )
+            </if>
+            <if test="orgCodes!=null">
+                and exists (select 1 from ORG_RELATION trelationOrg
+                <if test="orgHasChild==null||orgHasChild==false">
+                    INNER JOIN ORG_GROUP torgC on trelationOrg.GROUP_ID_ = torgC.ID_ and torgC.code_ in
+                    <foreach collection="orgCodes" item="orgCode" index="index" open="(" close=")" separator=",">
+                        #{orgCode}
+                    </foreach>
+                </if>
+                <if test="orgHasChild==true">
+                    INNER JOIN ORG_GROUP torgC on trelationOrg.GROUP_ID_ = torgC.ID_
+                    inner join ORG_GROUP torgM on torgC.PATH_ like concat(torgM.PATH_,'%') and torgM.code_ in
+                    <foreach collection="orgCodes" item="orgCode" index="index" open="(" close=")" separator=",">
+                        #{orgCode}
+                    </foreach>
+                </if>
+                where tuser.ID_=trelationOrg.USER_ID_
+                and trelationOrg.TYPE_='groupUser'
+                )
+            </if>
+            <if test="orgPath!=null">
+                and exists (select 1 from ORG_RELATION trelationOrgPath
+                INNER JOIN ORG_GROUP torgCPath on trelationOrgPath.GROUP_ID_ = torgCPath.ID_ and torgCPath.PATH_ like
+                #{orgPath}
+                where tuser.ID_=trelationOrgPath.USER_ID_
+                and trelationOrgPath.TYPE_='groupUser'
+                )
+            </if>
+            <if test="roleIds!=null">
+                and exists (select 1 from ORG_RELATION trelationRole where tuser.ID_=trelationRole.USER_ID_
+                and trelationRole.TYPE_='userRole' and trelationRole.GROUP_ID_ in
+                <foreach collection="roleIds" item="roleId" index="index" open="(" close=")" separator=",">
+                    #{roleId}
+                </foreach>)
+            </if>
+            <if test="roleCodes!=null">
+                and exists (select 1 from ORG_RELATION trelationRole
+                inner join org_role trole on trelationRole.GROUP_ID_ = trole.ID_
+                where tuser.ID_=trelationRole.USER_ID_
+                and trelationRole.TYPE_='userRole' and trole.alias_ in
+                <foreach collection="roleCodes" item="roleCode" index="index" open="(" close=")" separator=",">
+                    #{roleCode}
+                </foreach>)
+            </if>
+            <if test="postIds!=null">
+                and exists (select 1 from ORG_RELATION trelationPost where tuser.ID_=trelationPost.USER_ID_
+                and trelationPost.TYPE_='postUser' and trelationPost.GROUP_ID_ in
+                <foreach collection="postIds" item="postId" index="index" open="(" close=")" separator=",">
+                    #{postId}
+                </foreach>)
+            </if>
+            <if test="postCodes!=null">
+                and exists (select 1 from ORG_RELATION trelationPost
+                inner join org_post tpost on trelationPost.GROUP_ID_ = tpost.ID_
+                where tuser.ID_=trelationPost.USER_ID_
+                and trelationPost.TYPE_='postUser' and tpost.code_ in
+                <foreach collection="postCodes" item="postCode" index="index" open="(" close=")" separator=",">
+                    #{postCode}
+                </foreach>)
             </if>
         </where>
         <if test="orderBySql!=null">
             ORDER BY ${orderBySql}
         </if>
         <if test="orderBySql==null">
-            ORDER BY id_ DESC
+            ORDER BY tuser.id_ DESC
         </if>
     </select>
 
     <update id="update" parameterType="com.dstz.org.core.model.User">
-		UPDATE org_user SET
-		fullname_=#{fullname,jdbcType=VARCHAR},
-		account_=#{account,jdbcType=VARCHAR},
-		email_=#{email,jdbcType=VARCHAR},
-		mobile_=#{mobile,jdbcType=VARCHAR},
-		weixin_=#{weixin,jdbcType=VARCHAR},
-		address_=#{address,jdbcType=VARCHAR},
-		photo_=#{photo,jdbcType=VARCHAR},
-		sex_=#{sex,jdbcType=VARCHAR},
-		from_=#{from,jdbcType=VARCHAR},
-		password_=#{password,jdbcType=VARCHAR},
-		status_=#{status,jdbcType=NUMERIC},
-		update_time_=#{updateTime,jdbcType=TIMESTAMP},
-		update_by_=#{updateBy,jdbcType=VARCHAR}
-		WHERE
-		id_=#{id}
-	</update>
+        UPDATE
+        <include refid="tableName"/>
+        SET
+        fullname_=#{fullname,jdbcType=VARCHAR},
+        account_=#{account,jdbcType=VARCHAR},
+        email_=#{email,jdbcType=VARCHAR},
+        mobile_=#{mobile,jdbcType=VARCHAR},
+        weixin_=#{weixin,jdbcType=VARCHAR},
+        <if test="openid!=null">
+            openid_=#{openid,jdbcType=VARCHAR},
+        </if>
+        address_=#{address,jdbcType=VARCHAR},
+        photo_=#{photo,jdbcType=VARCHAR},
+        sex_=#{sex,jdbcType=VARCHAR},
+        from_=#{from,jdbcType=VARCHAR},
+        password_=#{password,jdbcType=VARCHAR},
+        status_=#{status,jdbcType=NUMERIC},
+        update_time_=#{updateTime,jdbcType=TIMESTAMP},
+        update_by_=#{updateBy,jdbcType=VARCHAR}
+        sn_=#{sn,jdbcType=INTEGER},
+        telephone_=#{telephone,jdbcType=VARCHAR},
+        active_status_=#{activeStatus,jdbcType=INTEGER},
+        secret_level_=#{secretLevel,jdbcType=INTEGER},
+        type_=#{type,jdbcType=VARCHAR}
+        WHERE
+        id_=#{id}
+    </update>
 
+
+
+    <select id="getUserListByPost" parameterType="java.util.Map" resultMap="User">
+		SELECT orgUser.* FROM org_user orgUser
+		left join org_relation relation on relation.user_id_ = orgUser.id_
+		WHERE  relation.type_ = 'groupUserRole'
+		and relation.group_id_ = #{groupId}
+		and relation.role_id_ = #{roleId}
+	</select>
     <delete id="remove" parameterType="java.lang.String">
-		DELETE FROM org_user 
-		WHERE
-		id_=#{id}
-	</delete>
+        DELETE FROM
+        <include refid="tableName"/>
+        WHERE
+        id_=#{id}
+    </delete>
 
     <select id="isUserExist" resultType="java.lang.Integer">
-        SELECT count(1) FROM org_user where account_=#{account}
+        SELECT count(1) FROM
+        <include refid="tableName"/>
+        where account_=#{account}
         <if test="id!=null">
             and id_!=#{id}
         </if>
     </select>
-    
+
+    <select id="getUserListByGroupPath" parameterType="java.lang.String" resultMap="User">
+        select a.* from
+        <include refid="tableName"/>
+        a inner join org_relation b on a.status_ = '1' and a.id_ = b.user_id_
+        inner join org_group c on b.group_id_ = c.id_
+        where c.path_ LIKE #{path}
+    </select>
+
+    <delete id="removeOutSystemUser" parameterType="java.lang.String">
+        DELETE FROM
+        <include refid="tableName"/>
+        WHERE from_ != 'system'
+    </delete>
+
+    <select id="getByOpenid" parameterType="java.lang.String" resultMap="User">
+        SELECT * FROM
+        <include refid="tableName"/>
+        WHERE openid_=#{openid}
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.dstz.org.core.model.User">
+        update
+        <include refid="tableName"/>
+        <set>
+            <include refid="forUpdate"/>
+        </set>
+        where id_ = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getIdByAccount" parameterType="string" resultType="string">
+        SELECT id_ FROM
+        <include refid="tableName"/>
+        WHERE account_= #{account,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getAllEnableUserNum" resultType="int">
+        SELECT count(1) as num FROM
+        <include refid="tableName"/>
+        WHERE status_= '1'
+    </select>
+
+    <select id="getUsersByOrgPath" parameterType="string" resultMap="User">
+        select distinct a.* from
+        <include refid="tableName"/>
+        a inner join org_relation b on a.status_ = '1' and a.id_ = b.user_id_
+        inner join org_group c on b.group_id_ = c.id_
+        where c.path_ LIKE #{orgPath}
+    </select>
 </mapper>

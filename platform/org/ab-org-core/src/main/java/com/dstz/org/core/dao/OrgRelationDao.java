@@ -71,5 +71,18 @@ public interface OrgRelationDao extends BaseDao<String, OrgRelation> {
 	 * @return
 	 */
 	OrgRelation getPost(String id);
-	
+
+	void removeRelationByGroupId(@Param("groupType") String var1, @Param("groupId") String var2);
+
+	void deleteRelationByUserIdAndType(@Param("userId") String var1, @Param("type") String var2, @Param("oldGroupId") String var3);
+
+	void updateGroupId(OrgRelation var1);
+
+	void updateGroupIdByUserId(OrgRelation var1);
+
+	int updateByPrimaryKeySelective(OrgRelation var1);
+
+	void removeByUserId(@Param("userId") String var1, @Param("relationTypes") List<String> var2);
+
+	void removeAllRelation(@Param("relationType") String relationType);
 }

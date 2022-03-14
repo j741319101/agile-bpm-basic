@@ -32,5 +32,18 @@ public interface UserDao extends BaseDao<String, User> {
 	List<User> getUserListByRelation(@Param("relationId")String relId, @Param("relationType")String type);
 	
 	List<User> getUserListByPost(@Param("roleId")String roleId, @Param("groupId")String groupId);
-	
+
+    List<User> getUserListByGroupPath(@Param("path") String var1);
+
+    void removeOutSystemUser();
+
+    User getByOpenid(String var1);
+
+    int updateByPrimaryKeySelective(User var1);
+
+    String getIdByAccount(String var1);
+
+    Integer getAllEnableUserNum();
+
+    List<User> getUsersByOrgPath(@Param("orgPath") String var1);
 }

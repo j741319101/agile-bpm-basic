@@ -15,10 +15,13 @@ public class GroupDTO implements IGroup {
 	String groupId;
 	String groupName;
 	String groupCode;
-	Long Sn;
+	Integer Sn;
 	String groupType;
 	String parentId;
 	String path;
+	protected String simple;
+	protected Integer userNum;
+	protected String parentName;
 	
 	public GroupDTO(IGroup group) {
 		this.groupCode = group.getGroupCode();
@@ -67,10 +70,10 @@ public class GroupDTO implements IGroup {
 		this.groupCode = groupCode;
 	}
  
-	public Long getSn() {
+	public Integer getSn() {
 		return Sn;
 	}
-	public void setSn(Long sn) {
+	public void setSn(Integer sn) {
 		Sn = sn;
 	}
 	public String getGroupType() {
@@ -91,7 +94,31 @@ public class GroupDTO implements IGroup {
 	public void setPath(String path) {
 		this.path = path;
 	}
- 
-	
 
+	@Override
+	public String getSimple() {
+		return simple;
+	}
+
+	public void setSimple(String simple) {
+		this.simple = simple;
+	}
+
+	@Override
+	public Integer getUserNum() {
+		return userNum;
+	}
+
+	public void setUserNum(Integer userNum) {
+		this.userNum = userNum;
+	}
+
+	@Override
+	public String getParentName() {
+		return parentName;
+	}
+
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
 }

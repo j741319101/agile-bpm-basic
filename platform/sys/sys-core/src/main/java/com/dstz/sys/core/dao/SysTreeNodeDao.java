@@ -1,5 +1,6 @@
 package com.dstz.sys.core.dao;
 
+import com.dstz.sys.api.model.SysNodeOrderParam;
 import org.mybatis.spring.annotation.MapperScan;
 
 import com.dstz.base.dao.BaseDao;
@@ -33,4 +34,9 @@ public interface SysTreeNodeDao extends BaseDao<String, SysTreeNode> {
      */
     void removeByPath(String path);
 
+    int chageOrder(SysNodeOrderParam var1);
+
+    Integer getCountByStartWithPath(String var1);
+
+    void removeAll();
 }

@@ -35,4 +35,17 @@ public interface UserManager extends Manager<String, User> {
 
 	void saveUserInfo(User user);
 
+    List<User> getUserListByGroupPath(String var1);
+
+    void removeOutSystemUser();
+
+    User getByOpneid(String var1);
+
+    int updateByPrimaryKeySelective(User var1);
+
+    String getIdByAccount(String var1);
+
+    Integer getAllEnableUserNum();
+
+    List<User> getUsersByOrgPath(String var1);
 }

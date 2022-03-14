@@ -22,4 +22,6 @@ public @interface CatchErr {
      * @return
      */
     boolean write2response() default false;
+
+    boolean write2errorlog() default false;
 }

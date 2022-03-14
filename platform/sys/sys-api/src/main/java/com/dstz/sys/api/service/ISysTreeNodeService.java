@@ -2,6 +2,8 @@ package com.dstz.sys.api.service;
 
 import com.dstz.sys.api.model.ISysTreeNode;
 
+import java.util.List;
+
 /**
  * <pre>
  * 描述：SysTreeNodeService接口
@@ -22,4 +24,9 @@ public interface ISysTreeNodeService {
      */
     ISysTreeNode getById(String id);
 
+    List<? extends ISysTreeNode> getTreeNodesByType(String var1);
+
+    List<? extends ISysTreeNode> getTreeNodesByNodeId(String var1);
+
+    String creatByTreeKey(String var1, String var2);
 }

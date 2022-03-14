@@ -1,8 +1,10 @@
 package com.dstz.org.core.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.dstz.org.api.model.IUserRole;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -87,8 +89,23 @@ public class User extends BaseModel implements IUser{
     /**
      * 用户关系
      */
-    protected List<OrgRelation> orgRelationList; 
-    
+    protected List<OrgRelation> orgRelationList;
+
+
+    protected String openid;
+    protected Integer sn;
+    protected String telephone;
+    protected Integer activeStatus;
+    protected Integer secretLevel;
+    protected String type;
+    protected List<String> managerGroupIdList;
+    protected String orgId;
+    protected String orgName;
+    protected String orgCode;
+    protected String postId;
+    protected String postName;
+    protected String postCode;
+
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
@@ -254,27 +271,6 @@ public class User extends BaseModel implements IUser{
         return this.status;
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("id", this.id)
-                .append("fullname", this.fullname)
-                .append("account", this.account)
-                .append("password", this.password)
-                .append("email", this.email)
-                .append("mobile", this.mobile)
-                .append("weixin", this.weixin)
-                .append("createTime", this.createTime)
-                .append("address", this.address)
-                .append("photo", this.photo)
-                .append("sex", this.sex)
-                .append("from", this.from)
-                .append("status", this.status)
-                .toString();
-    }
-
     public String getUserId() {
         return this.id;
     }
@@ -292,5 +288,119 @@ public class User extends BaseModel implements IUser{
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
- 
+
+    public User() {
+    }
+
+    public Integer getSn() {
+        return this.sn;
+    }
+
+    public void setSn(Integer sn) {
+        this.sn = sn;
+    }
+
+    public List<IUserRole> getRoles() {
+        return null;
+    }
+
+    public String getOpenid() {
+        return this.openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getTelephone() {
+        return this.telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public Integer getActiveStatus() {
+        return this.activeStatus;
+    }
+
+    public void setActiveStatus(Integer activeStatus) {
+        this.activeStatus = activeStatus;
+    }
+
+    public Integer getSecretLevel() {
+        return this.secretLevel;
+    }
+
+    public void setSecretLevel(Integer secretLevel) {
+        this.secretLevel = secretLevel;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<String> getManagerGroupIdList() {
+        return this.managerGroupIdList;
+    }
+
+    public String getOrgId() {
+        return this.orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getOrgName() {
+        return this.orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getOrgCode() {
+        return this.orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
+    }
+
+    public String getPostId() {
+        return this.postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public String getPostName() {
+        return this.postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
+
+    public void setManagerGroupIdList(List<String> managerGroupIdList) {
+        this.managerGroupIdList = managerGroupIdList;
+    }
+
+    public String getPostCode() {
+        return this.postCode;
+    }
+
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
+    }
+
+    public String toString() {
+        return "User{fullname='" + this.fullname + '\'' + ", account='" + this.account + '\'' + ", password='" + this.password + '\'' + ", email='" + this.email + '\'' + ", mobile='" + this.mobile + '\'' + ", weixin='" + this.weixin + '\'' + ", openid='" + this.openid + '\'' + ", createTime=" + this.createTime + ", address='" + this.address + '\'' + ", photo='" + this.photo + '\'' + ", sex='" + this.sex + '\'' + ", from='" + this.from + '\'' + ", status=" + this.status + ", sn=" + this.sn + ", telephone='" + this.telephone + '\'' + ", activeStatus=" + this.activeStatus + ", orgRelationList=" + this.orgRelationList + ", id='" + this.id + '\'' + ", createTime=" + this.createTime + ", createBy='" + this.createBy + '\'' + ", updateTime=" + this.updateTime + ", updateBy='" + this.updateBy + '\'' + ", version=" + this.version + ", delete=" + this.delete + '}';
+    }
 }

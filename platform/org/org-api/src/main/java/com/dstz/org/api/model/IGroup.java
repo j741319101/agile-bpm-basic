@@ -56,4 +56,20 @@ public interface IGroup extends Serializable {
     @ApiModelProperty("树形组 parentId")
     String getParentId();
 
+    @ApiModelProperty("排序sn")
+    Integer getSn();
+
+    @ApiModelProperty("路径")
+    String getPath();
+
+    @ApiModelProperty("用户人数")
+    Integer getUserNum();
+
+    @ApiModelProperty("简称")
+    String getSimple();
+
+    @ApiModelProperty("父级名称")
+    default String getParentName() {
+        return null;
+    }
 }

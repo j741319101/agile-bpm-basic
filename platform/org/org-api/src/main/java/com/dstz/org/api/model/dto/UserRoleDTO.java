@@ -30,7 +30,14 @@ public class UserRoleDTO implements IUserRole{
     	
 	}
 
-	public UserRoleDTO(String roleId, String userId, String fullname, String roleName) {
+    public UserRoleDTO(String roleId, String roleName, String alias) {
+        this.roleId = roleId;
+        this.roleName = roleName;
+        this.alias = alias;
+    }
+
+
+    public UserRoleDTO(String roleId, String userId, String fullname, String roleName) {
 		super();
 		this.roleId = roleId;
 		this.userId = userId;
