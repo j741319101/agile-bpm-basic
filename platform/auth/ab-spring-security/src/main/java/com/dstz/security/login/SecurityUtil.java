@@ -34,7 +34,6 @@ public class SecurityUtil {
      * @param request
      * @param response
      * @param username
-     * @param enPassword
      */
     public static void writeRememberMeCookie(HttpServletRequest request, HttpServletResponse response, String username, String password) {
         String rememberMe = RequestUtil.getString(request, "rememberMe", "0");

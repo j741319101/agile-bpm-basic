@@ -1,9 +1,6 @@
 package com.dstz.org.core.manager.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -13,6 +10,7 @@ import com.dstz.base.core.event.CommonEvent;
 import com.dstz.base.core.util.AppUtil;
 import com.dstz.org.api.constant.UserTypeConstant;
 import com.dstz.org.core.manager.GroupManager;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,10 +158,10 @@ public class UserManagerImpl extends BaseManager<String, User> implements UserMa
 
 			this.create(user);
 		} else {
-			user.setAccount((String)null);
+//			user.setAccount((String)null);
 			if (StringUtil.isNotEmpty(user.getPassword())) {
 				user.setPassword(EncryptUtil.encryptSha256(user.getPassword()));
-				user.setPassword(user.getPassword());
+//				user.setPassword(user.getPassword());
 			}
 			user.setUpdateBy(this.currentContext.getCurrentUserId());
 			user.setUpdateTime(new Date());

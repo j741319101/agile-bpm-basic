@@ -5,6 +5,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dstz.base.core.encrypt.EncryptUtil;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -55,6 +56,8 @@ public class LoginController extends ControllerTools {
         }
         if (StringUtil.isEmpty(password)) {
             throw new BusinessMessage("密码不能为空", PlatFormStatusCode.LOGIN_ERROR);
+        }else {
+            password = EncryptUtil.encryptSha256(password);
         }
 
         try {
@@ -109,8 +112,6 @@ public class LoginController extends ControllerTools {
      * @param request
      * @param response
      * @param token
-     * @param audience 
-     * @param jwtHeader
      */
     private void wiriteJwtToken2Cookie(HttpServletRequest request,HttpServletResponse response, String token){
     	Cookie cookie = new Cookie(jWTService.getJwtHeader(), jWTService.getJwtTokenHead()+ token);
