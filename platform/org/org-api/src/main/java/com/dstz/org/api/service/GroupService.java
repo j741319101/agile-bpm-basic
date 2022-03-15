@@ -3,7 +3,11 @@ package com.dstz.org.api.service;
 import java.util.List;
 import java.util.Map;
 
+import com.dstz.base.api.query.QueryFilter;
+import com.dstz.base.api.response.impl.PageResultDto;
 import com.dstz.org.api.model.IGroup;
+import com.dstz.org.api.model.dto.BpmOrgDTO;
+import com.dstz.org.api.model.dto.GroupQueryDTO;
 
 /**
  * 描述：用户与组服务接口
@@ -71,5 +75,23 @@ public interface GroupService {
 
     IGroup getMainGroup(String userId);
 
+    List<? extends IGroup> getSiblingsGroups(String var1);
 
+    List<? extends IGroup> getRoleList(QueryFilter var1);
+
+    List<? extends IGroup> getSameLevel(String var1, String var2);
+
+    List<? extends IGroup> getGroupsById(String var1, String var2);
+
+    List<? extends IGroup> getChildrenGroupsById(String var1, String var2);
+
+    IGroup getMasterGroupByUserId(String var1, String var2);
+
+    List<? extends IGroup> getGroupListByType(String var1);
+
+    PageResultDto getGroupsByGroupQuery(GroupQueryDTO var1);
+
+    String getCurrentManagerOrgIds();
+
+    List<BpmOrgDTO> getOrgInfos(String var1);
 }

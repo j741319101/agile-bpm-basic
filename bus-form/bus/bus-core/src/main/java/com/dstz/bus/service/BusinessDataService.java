@@ -1,10 +1,13 @@
 package com.dstz.bus.service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.dstz.base.api.exception.BusinessException;
+import com.dstz.form.api.constant.FormStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -191,4 +194,37 @@ public class BusinessDataService implements IBusinessDataService {
 		BusinessObject businessObject = businessObjectManager.getFilledByKey(boKey);
 		return analysisFormDefData(jsonObject, businessObject.getRelation());
 	}
+
+	public void saveNewFormDefData(JSONObject data, IBusinessPermission businessPermission) throws BusinessException {
+		Iterator var3 = data.entrySet().iterator();
+
+		while(var3.hasNext()) {
+			Entry<String, Object> entry = (Entry)var3.next();
+			String boKey = (String)entry.getKey();
+			JSONObject boData = (JSONObject)entry.getValue();
+			BusinessData businessData = (BusinessData)this.parseBusinessData(boData, boKey);
+			Object pk = businessData.getPk();
+			if (pk != null && !pk.toString().equals("")) {
+				throw new BusinessException("当前接口不允许编辑数据", FormStatusCode.PARAM_ILLEGAL);
+			}
+
+			businessData.getBusTableRel().getBusObj().setPermission((BusObjPermission)businessPermission.getBusObj(boKey));
+			BusinessDataPersistenceServiceFactory.saveData(businessData);
+		}
+
+	}
+
+
+	public JSONObject getFormDefData(IBusinessObject businessObject) {
+		BusinessData businessData = (BusinessData)this.loadData((BusinessObject)businessObject, true);
+		JSONObject data = new JSONObject();
+		this.assemblyFormDefData(data, businessData);
+		return data;
+	}
+
+	public void saveData(IBusinessData businessData, JSONObject instData) {
+		BusinessDataPersistenceServiceFactory.saveData((BusinessData)businessData, instData);
+	}
+
+
 }

@@ -3,6 +3,7 @@ package com.dstz.bus.service;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dstz.base.api.exception.BusinessException;
 import com.dstz.base.core.util.AppUtil;
 import com.dstz.bus.model.BusinessData;
@@ -53,6 +54,12 @@ public class BusinessDataPersistenceServiceFactory {
 		businessDataPersistenceService.saveData(businessData);
 	}
 
+
+	public static void saveData(BusinessData businessData, JSONObject instData) {
+		BusinessObject businessObject = businessData.getBusTableRel().getBusObj();
+		BusinessDataPersistenceService businessDataPersistenceService = getService(businessObject.getPersistenceType());
+		businessDataPersistenceService.saveData(businessData);
+	}
 	/**
 	 * <pre>
 	 * 加载bo数据

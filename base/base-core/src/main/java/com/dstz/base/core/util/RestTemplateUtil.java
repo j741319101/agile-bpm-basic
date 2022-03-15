@@ -1,10 +1,13 @@
 package com.dstz.base.core.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.hutool.core.map.MapUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
@@ -115,5 +119,52 @@ public class RestTemplateUtil {
 		}
 
 		return responseEntity.getBody();
+	}
+
+	public static <T> void asynPost(String url, Object data, ParameterizedTypeReference<T> typeReference) {
+		ThreadPoolTaskExecutor threadPoolTaskExecutor = (ThreadPoolTaskExecutor)AppUtil.getBean("taskExecutor");
+		HttpHeaders headers = new HttpHeaders();
+		HttpServletRequest request = RequestContext.getHttpServletRequest();
+		JWTService jwtService = (JWTService)AppUtil.getBean(JWTService.class);
+		String authHeader = request.getHeader(jwtService.getJwtHeader());
+		if (StringUtil.isEmpty(authHeader)) {
+			authHeader = CookieUitl.getValueByName(jwtService.getJwtHeader(), request);
+			headers.add("Cookie", jwtService.getJwtHeader() + "=" + authHeader);
+		} else {
+			headers.add(jwtService.getJwtHeader(), authHeader);
+		}
+
+		HttpEntity<Object> entity = new HttpEntity(data, headers);
+		String urlTemp = RequestContext.getUrl(url);
+		logger.info("entity: {}", JSON.toJSONString(entity));
+		logger.info("url:{}", urlTemp);
+		threadPoolTaskExecutor.execute(() -> {
+			ResponseEntity<T> responseEntity = restTemplate().exchange(url, HttpMethod.POST, entity, typeReference, new Object[0]);
+			logger.info("responseEntity:{}", JSON.toJSONString(responseEntity));
+		});
+	}
+
+	public static <T> T get(String url, Map<String, String> heads, Class<T> responseType) {
+		HttpHeaders headers = new HttpHeaders();
+		if (MapUtil.isNotEmpty(heads)) {
+			Iterator var4 = heads.entrySet().iterator();
+
+			while(var4.hasNext()) {
+				Map.Entry<String, String> param = (Map.Entry)var4.next();
+				headers.add((String)param.getKey(), (String)param.getValue());
+			}
+		}
+
+		HttpEntity<Object> entity = new HttpEntity((Object)null, headers);
+		String urlTemp = RequestContext.getUrl(url);
+		logger.info("entity: {}", JSON.toJSONString(entity));
+		logger.info("url:{}", urlTemp);
+		ResponseEntity<T> responseEntity = restTemplate().exchange(url, HttpMethod.GET, entity, responseType, new Object[0]);
+		logger.info("responseEntity:{}", JSON.toJSONString(responseEntity));
+		if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
+			throw new BusinessError(JSON.toJSONString(responseEntity), BaseStatusCode.REMOTE_ERROR);
+		} else {
+			return responseEntity.getBody();
+		}
 	}
 }

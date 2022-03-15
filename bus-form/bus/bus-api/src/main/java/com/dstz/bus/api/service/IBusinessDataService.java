@@ -1,6 +1,7 @@
 package com.dstz.bus.api.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dstz.base.api.exception.BusinessException;
 import com.dstz.bus.api.model.IBusinessData;
 import com.dstz.bus.api.model.IBusinessObject;
 import com.dstz.bus.api.model.IBusinessPermission;
@@ -77,4 +78,11 @@ public interface IBusinessDataService {
 	 * @return
 	 */
 	IBusinessData loadData(IBusinessObject businessObject, Object id, boolean init);
+
+	void saveNewFormDefData(JSONObject data, IBusinessPermission businessPermission) throws BusinessException;
+
+	JSONObject getFormDefData(IBusinessObject businessObject);
+
+	void saveData(IBusinessData businessData, JSONObject instData);
+
 }

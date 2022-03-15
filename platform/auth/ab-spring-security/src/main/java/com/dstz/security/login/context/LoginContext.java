@@ -172,4 +172,8 @@ private static final Logger log = LoggerFactory.getLogger(LoginContext.class);
         return this.userService.getUserRole(this.getCurrentUserId());
     }
 
+    public void clearUserRedisCache(String userId) {
+        ((ICache)AppUtil.getBean(ICache.class)).delByKey("current_org".concat(userId));
+    }
+
 }

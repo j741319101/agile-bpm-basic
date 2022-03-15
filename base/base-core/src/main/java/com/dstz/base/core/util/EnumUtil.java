@@ -88,6 +88,28 @@ public class EnumUtil {
             throw new RuntimeException(e);
         }
     }
+    public static JSONArray toJSONArray(Class<? extends Enum<?>> enumClass, String tag) {
+        try {
+            Method method = enumClass.getMethod("getValuesByTags", String.class);
+            Enum<?>[] enums = (Enum[])((Enum[])method.invoke(enumClass, tag));
+            JSONArray jsonArray = new JSONArray(enums.length);
+            Enum[] var5 = enums;
+            int var6 = enums.length;
+
+            for(int var7 = 0; var7 < var6; ++var7) {
+                Enum<?> e = var5[var7];
+                jsonArray.add(toJSON(e));
+            }
+
+            loadEnumExtraData(enumClass, (enumExtraData) -> {
+                jsonArray.add(JSON.toJSON(enumExtraData));
+            });
+            return jsonArray;
+        } catch (Exception var9) {
+            throw new RuntimeException(var9);
+        }
+    }
+
 
     public static JSONObject toJSON(String enumClassPath) {
         try {

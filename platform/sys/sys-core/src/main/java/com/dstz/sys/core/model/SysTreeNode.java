@@ -54,6 +54,34 @@ public class SysTreeNode extends BaseModel implements ISysTreeNode {
      * 当前节点的子节点
      */
     private List<SysTreeNode> children;
+    @NotEmpty
+    private String icon;
+    String appName;
+    int count;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     @Override
     public String getKey() {

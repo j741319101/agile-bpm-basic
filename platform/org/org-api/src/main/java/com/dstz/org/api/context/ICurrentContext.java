@@ -82,4 +82,6 @@ public interface ICurrentContext {
     boolean isAdmin(IUser var1);
 
     List<? extends IUserRole> getCurrentRoles();
+
+    void clearUserRedisCache(String var1);
 }

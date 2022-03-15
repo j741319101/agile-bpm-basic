@@ -1,9 +1,12 @@
 package com.dstz.sys.core.manager;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dstz.base.manager.Manager;
+import com.dstz.sys.api.model.SysNodeOrderParam;
 import com.dstz.sys.core.model.SysTreeNode;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * 系统树节点 Manager处理接口
@@ -74,4 +77,16 @@ public interface SysTreeNodeManager extends Manager<String, SysTreeNode> {
      * @param path
      */
 	void removeByPath(String path);
+
+    List<SysTreeNode> getByParentKey(String var1);
+
+    int chageOrder(SysNodeOrderParam var1);
+
+    int getCountByStartWithPath(String var1);
+
+    void importData(XSSFWorkbook var1, Map<String, Integer> var2);
+
+    String findSysTreeNodeId(Map<String, String> var1, String var2, String var3);
+
+    String creatByTreeKey(String var1, String var2);
 }

@@ -3,6 +3,8 @@ package com.dstz.bus.manager;
 import com.dstz.base.manager.Manager;
 import com.dstz.bus.model.BusinessPermission;
 
+import java.util.Set;
+
 /**
  * bo权限 Manager处理接口
  * 
@@ -38,4 +40,13 @@ public interface BusinessPermissionManager extends Manager<String, BusinessPermi
 	 * @return
 	 */
 	BusinessPermission getByObjTypeAndObjVal(String objType, String objVal, String defaultBoKeys);
+
+	BusinessPermission getByObjTypeAndObjVal(String var1, String var2, String var3, String var4);
+
+	int removeByBpmDefKey(String var1, String var2, String var3);
+
+	int removeNotInBpmNode(String var1, String var2, Set<String> var3);
+
+	int removeByDefId(String var1);
+
 }

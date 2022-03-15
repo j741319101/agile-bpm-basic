@@ -4,23 +4,19 @@ package com.dstz.base.api.request;
  * TODO 请求头
  */
 public class RequestHead {
-
     private String sourceSystem;
-
     private String operator;
-
     private String memo;
-
     private String ip;
-
     private Boolean isEncryptData;
-
     private String secreKey;
-    
-    private String traceId ;
+    private String traceId;
+
+    public RequestHead() {
+    }
 
     public String getSourceSystem() {
-        return sourceSystem;
+        return this.sourceSystem;
     }
 
     public void setSourceSystem(String sourceSystem) {
@@ -28,7 +24,7 @@ public class RequestHead {
     }
 
     public String getOperator() {
-        return operator;
+        return this.operator;
     }
 
     public void setOperator(String operator) {
@@ -36,7 +32,7 @@ public class RequestHead {
     }
 
     public String getMemo() {
-        return memo;
+        return this.memo;
     }
 
     public void setMemo(String memo) {
@@ -44,7 +40,7 @@ public class RequestHead {
     }
 
     public String getIp() {
-        return ip;
+        return this.ip;
     }
 
     public void setIp(String ip) {
@@ -52,7 +48,7 @@ public class RequestHead {
     }
 
     public Boolean getIsEncryptData() {
-        return isEncryptData;
+        return this.isEncryptData;
     }
 
     public void setIsEncryptData(Boolean isEncryptData) {
@@ -60,18 +56,19 @@ public class RequestHead {
     }
 
     public String getSecreKey() {
-        return secreKey;
+        return this.secreKey;
     }
 
     public void setSecreKey(String secreKey) {
         this.secreKey = secreKey;
     }
 
-	public String getTraceId() {
-		return traceId;
-	}
+    public String getTraceId() {
+        return this.traceId;
+    }
 
-	public void setTraceId(String traceId) {
-		this.traceId = traceId;
-	}
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
+    }
 }
+

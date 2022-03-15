@@ -2,6 +2,7 @@ package com.dstz.bus.manager.impl;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -44,75 +45,75 @@ public class BusinessPermissionManagerImpl extends BaseManager<String, BusinessP
 		return busObjPermissionDao.getByObjTypeAndObjVal(objType, objVal);
 	}
 
-	@Override
-	public BusinessPermission getByObjTypeAndObjVal(String objType, String objVal, String defaultBoKeys) {
-		BusinessPermission oldPermission = getByObjTypeAndObjVal(objType, objVal);// 数据库的权限
-		if (oldPermission == null) {// 数据库找不到
-			oldPermission = new BusinessPermission();
-		}
-
-		BusinessPermission businessPermission = new BusinessPermission();
-		businessPermission.setObjType(objType);
-		businessPermission.setObjVal(objVal);
-		for (String boKey : defaultBoKeys.split(",")) {
-			// 1 bo层数据
-			BusinessObject bo = businessObjectManager.getFilledByKey(boKey);
-			if(bo == null) {
-				throw new BusinessException(boKey + " 业务对象丢失！");
-			}
-			
-			BusObjPermission busObjPermission = oldPermission.getBusObj(boKey);
-			if (busObjPermission == null) {
-				busObjPermission = new BusObjPermission();
-				busObjPermission.setKey(boKey);
-				busObjPermission.setName(bo.getName());
-				hanldeDefaultRightsField(busObjPermission);// bo才赋予默认值，因为下层会在计算逻辑中继承它的
-			}
-			businessPermission.getBusObjMap().put(boKey, busObjPermission);
-
-			// 处理表层数据
-			for (BusTableRel rel : bo.getRelation().list()) {
-				BusTablePermission busTablePermission = busObjPermission.getTableMap().get(rel.getTableKey());
-				if (busTablePermission == null) {
-					busTablePermission = new BusTablePermission();
-					busTablePermission.setKey(rel.getTableKey());
-					busTablePermission.setComment(rel.getTableComment());
-				}
-				busObjPermission.getTableMap().put(rel.getTableKey(), busTablePermission);
-
-				// 处理字段层数据
-				for (BusinessColumn column : rel.getTable().getColumnsWithoutPk()) {
-					BusColumnPermission busColumnPermission = busTablePermission.getColumnMap().get(column.getKey());
-					if (busColumnPermission == null) {
-						busColumnPermission = new BusColumnPermission();
-						busColumnPermission.setKey(column.getKey());
-						busColumnPermission.setComment(column.getComment());
-					}
-					busTablePermission.getColumnMap().put(column.getKey(), busColumnPermission);
-				}
-				
-				// 删除表中不存在却在权限里有的字段
-				Iterator<Entry<String, BusColumnPermission>> it = busTablePermission.getColumnMap().entrySet().iterator();  
-				while(it.hasNext()){  
-		            Entry<String, BusColumnPermission> entry = it.next();  
-		            if (rel.getTable().getColumnByKey(entry.getKey()) == null) {
-		                it.remove();
-		            }
-		        }  
-			}
-			
-			// 删除bo中不存在却在权限里有的表
-			Iterator<Entry<String, BusTablePermission>> it = busObjPermission.getTableMap().entrySet().iterator();  
-			while(it.hasNext()){  
-	            Entry<String, BusTablePermission> entry = it.next();  
-				if (bo.getRelation().find(entry.getKey())==null) {
-	            	it.remove();
-	            }
-	        }  
-		}
-
-		return businessPermission;
-	}
+//	@Override
+//	public BusinessPermission getByObjTypeAndObjVal(String objType, String objVal, String defaultBoKeys) {
+//		BusinessPermission oldPermission = getByObjTypeAndObjVal(objType, objVal);// 数据库的权限
+//		if (oldPermission == null) {// 数据库找不到
+//			oldPermission = new BusinessPermission();
+//		}
+//
+//		BusinessPermission businessPermission = new BusinessPermission();
+//		businessPermission.setObjType(objType);
+//		businessPermission.setObjVal(objVal);
+//		for (String boKey : defaultBoKeys.split(",")) {
+//			// 1 bo层数据
+//			BusinessObject bo = businessObjectManager.getFilledByKey(boKey);
+//			if(bo == null) {
+//				throw new BusinessException(boKey + " 业务对象丢失！");
+//			}
+//
+//			BusObjPermission busObjPermission = oldPermission.getBusObj(boKey);
+//			if (busObjPermission == null) {
+//				busObjPermission = new BusObjPermission();
+//				busObjPermission.setKey(boKey);
+//				busObjPermission.setName(bo.getName());
+//				hanldeDefaultRightsField(busObjPermission);// bo才赋予默认值，因为下层会在计算逻辑中继承它的
+//			}
+//			businessPermission.getBusObjMap().put(boKey, busObjPermission);
+//
+//			// 处理表层数据
+//			for (BusTableRel rel : bo.getRelation().list()) {
+//				BusTablePermission busTablePermission = busObjPermission.getTableMap().get(rel.getTableKey());
+//				if (busTablePermission == null) {
+//					busTablePermission = new BusTablePermission();
+//					busTablePermission.setKey(rel.getTableKey());
+//					busTablePermission.setComment(rel.getTableComment());
+//				}
+//				busObjPermission.getTableMap().put(rel.getTableKey(), busTablePermission);
+//
+//				// 处理字段层数据
+//				for (BusinessColumn column : rel.getTable().getColumnsWithoutPk()) {
+//					BusColumnPermission busColumnPermission = busTablePermission.getColumnMap().get(column.getKey());
+//					if (busColumnPermission == null) {
+//						busColumnPermission = new BusColumnPermission();
+//						busColumnPermission.setKey(column.getKey());
+//						busColumnPermission.setComment(column.getComment());
+//					}
+//					busTablePermission.getColumnMap().put(column.getKey(), busColumnPermission);
+//				}
+//
+//				// 删除表中不存在却在权限里有的字段
+//				Iterator<Entry<String, BusColumnPermission>> it = busTablePermission.getColumnMap().entrySet().iterator();
+//				while(it.hasNext()){
+//		            Entry<String, BusColumnPermission> entry = it.next();
+//		            if (rel.getTable().getColumnByKey(entry.getKey()) == null) {
+//		                it.remove();
+//		            }
+//		        }
+//			}
+//
+//			// 删除bo中不存在却在权限里有的表
+//			Iterator<Entry<String, BusTablePermission>> it = busObjPermission.getTableMap().entrySet().iterator();
+//			while(it.hasNext()){
+//	            Entry<String, BusTablePermission> entry = it.next();
+//				if (bo.getRelation().find(entry.getKey())==null) {
+//	            	it.remove();
+//	            }
+//	        }
+//		}
+//
+//		return businessPermission;
+//	}
 
 	/**
 	 * <pre>
@@ -130,4 +131,103 @@ public class BusinessPermissionManagerImpl extends BaseManager<String, BusinessP
 		jsonArray.add(json);
 		permission.getRights().put(RightsType.getDefalut().getKey(), jsonArray);
 	}
+
+	public BusinessPermission getByObjTypeAndObjVal(String defId, String objType, String objVal) {
+		return this.busObjPermissionDao.getByObjTypeAndObjVal(defId, objType, objVal);
+	}
+
+	public BusinessPermission getByObjTypeAndObjVal(String defId, String objType, String objVal, String defaultBoKeys) {
+		BusinessPermission oldPermission = this.getByObjTypeAndObjVal(defId, objType, objVal);
+		if (oldPermission == null) {
+			if (!objVal.endsWith("-global")) {
+				oldPermission = this.getByObjTypeAndObjVal(defId, objType, objVal.split("-")[0] + "-global");
+			}
+
+			if (oldPermission == null) {
+				oldPermission = new BusinessPermission();
+			}
+		}
+
+		BusinessPermission businessPermission = new BusinessPermission();
+		businessPermission.setObjType(objType);
+		businessPermission.setObjVal(objVal);
+		String[] var7 = defaultBoKeys.split(",");
+		int var8 = var7.length;
+
+		for(int var9 = 0; var9 < var8; ++var9) {
+			String boKey = var7[var9];
+			BusinessObject bo = this.businessObjectManager.getFilledByKey(boKey);
+			if (bo == null) {
+				throw new BusinessException(boKey + " 业务对象丢失！");
+			}
+
+			BusObjPermission busObjPermission = oldPermission.getBusObj(boKey);
+			if (busObjPermission == null) {
+				busObjPermission = new BusObjPermission();
+				busObjPermission.setKey(boKey);
+				busObjPermission.setName(bo.getName());
+				this.hanldeDefaultRightsField(busObjPermission);
+			}
+
+			businessPermission.getBusObjMap().put(boKey, busObjPermission);
+			Iterator it = bo.getRelation().list().iterator();
+
+			while(it.hasNext()) {
+				BusTableRel rel = (BusTableRel)it.next();
+				BusTablePermission busTablePermission = (BusTablePermission)busObjPermission.getTableMap().get(rel.getTableKey());
+				if (busTablePermission == null) {
+					busTablePermission = new BusTablePermission();
+					busTablePermission.setKey(rel.getTableKey());
+					busTablePermission.setComment(rel.getTableComment());
+				}
+
+				busObjPermission.getTableMap().put(rel.getTableKey(), busTablePermission);
+
+				BusinessColumn column;
+				BusColumnPermission busColumnPermission;
+				for(it = rel.getTable().getColumnsWithoutPk().iterator(); it.hasNext(); busTablePermission.getColumnMap().put(column.getKey(), busColumnPermission)) {
+					column = (BusinessColumn)it.next();
+					busColumnPermission = (BusColumnPermission)busTablePermission.getColumnMap().get(column.getKey());
+					if (busColumnPermission == null) {
+						busColumnPermission = new BusColumnPermission();
+						busColumnPermission.setKey(column.getKey());
+						busColumnPermission.setComment(column.getComment());
+					}
+				}
+
+				it = busTablePermission.getColumnMap().entrySet().iterator();
+
+				while(it.hasNext()) {
+					Entry<String, BusColumnPermission> entry = (Entry)it.next();
+					if (rel.getTable().getColumnByKey((String)entry.getKey()) == null) {
+						it.remove();
+					}
+				}
+			}
+
+			it = busObjPermission.getTableMap().entrySet().iterator();
+
+			while(it.hasNext()) {
+				Entry<String, BusTablePermission> entry = (Entry)it.next();
+				if (bo.getRelation().find((String)entry.getKey()) == null) {
+					it.remove();
+				}
+			}
+		}
+
+		return businessPermission;
+	}
+
+	public int removeByBpmDefKey(String defId, String objType, String boKey) {
+		return this.busObjPermissionDao.removeByBpmDefKey(defId, objType, boKey);
+	}
+
+	public int removeNotInBpmNode(String defId, String obKey, Set<String> nodeIds) {
+		return this.busObjPermissionDao.removeNotInBpmNode(defId, obKey, nodeIds);
+	}
+
+	public int removeByDefId(String defId) {
+		return this.busObjPermissionDao.removeByDefId(defId);
+	}
+
 }

@@ -85,7 +85,7 @@ public class ContextUtil {
             userId = getCurrentUserId();
         }
 
-//        contextUtil.currentContext.clearUserRedisCache(userId);  todo
+        contextUtil.currentContext.clearUserRedisCache(userId);
     }
 
     public static void setLocale(Locale locale) {

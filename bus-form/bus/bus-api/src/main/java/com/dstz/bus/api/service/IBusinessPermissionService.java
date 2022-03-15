@@ -19,6 +19,5 @@ public interface IBusinessPermissionService {
 	 *            是否计算当前用户的结果
 	 * @return
 	 */
-	IBusinessPermission getByObjTypeAndObjVal(String objType, String objVal, String defalutBoKeys, boolean calculate);
-
+	IBusinessPermission getByObjTypeAndObjVal(String defId, String objType, String objVal, String defaultBoKeys, boolean calculate);
 }
