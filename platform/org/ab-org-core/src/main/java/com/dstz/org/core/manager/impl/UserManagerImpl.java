@@ -1,6 +1,7 @@
 package com.dstz.org.core.manager.impl;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -29,6 +30,7 @@ import com.dstz.org.core.model.OrgRelation;
 import com.dstz.org.core.model.User;
 
 import cn.hutool.core.collection.CollectionUtil;
+import org.springframework.util.CollectionUtils;
 
 /**
  * <pre>
@@ -160,16 +162,19 @@ public class UserManagerImpl extends BaseManager<String, User> implements UserMa
 		} else {
 //			user.setAccount((String)null);
 			if (StringUtil.isNotEmpty(user.getPassword())) {
-				user.setPassword(EncryptUtil.encryptSha256(user.getPassword()));
-//				user.setPassword(user.getPassword());
+//				user.setPassword(EncryptUtil.encryptSha256(user.getPassword()));
+				user.setPassword(user.getPassword());
 			}
 			user.setUpdateBy(this.currentContext.getCurrentUserId());
 			user.setUpdateTime(new Date());
 			this.updateByPrimaryKeySelective(user);
 			if (!CollectionUtil.isEmpty(orgRelationList)) {
-				List<String> relationTypes = new ArrayList();
-				relationTypes.add(RelationTypeConstant.GROUP_USER.getKey());
-				this.orgRelationMananger.removeByUserId(user.getId(), relationTypes);
+//				List<String> relationTypes = new ArrayList();
+                List<String> relationTypes = orgRelationList.stream().map(rel->rel.getType()).distinct().collect(Collectors.toList());
+//				relationTypes.add(RelationTypeConstant.GROUP_USER.getKey());
+                if (!CollectionUtils.isEmpty(relationTypes)){
+                    this.orgRelationMananger.removeByUserId(user.getId(), relationTypes);
+                }
 			}
 		}
 		if (!CollectionUtil.isEmpty(orgRelationList)) {
@@ -177,7 +182,13 @@ public class UserManagerImpl extends BaseManager<String, User> implements UserMa
 				if (RelationTypeConstant.GROUP_USER.getKey().equals(rel.getType())) {
 					rel.setUserId(user.getId());
 					this.orgRelationMananger.create(rel);
-				}
+				}else if(RelationTypeConstant.USER_ROLE.getKey().equals(rel.getType())){
+                    rel.setUserId(user.getId());
+                    if (StringUtils.isNotEmpty(rel.getRoleId())){
+                        rel.setGroupId(rel.getRoleId());
+                    }
+                    this.orgRelationMananger.create(rel);
+                }
 			});
 		}
 

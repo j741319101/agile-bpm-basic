@@ -1,5 +1,7 @@
 package com.dstz.org.api.model.dto;
 
+import org.springframework.util.StringUtils;
+
 public class BpmUserDTO {
     private static final long serialVersionUID = -700694295167942753L;
     String userId;

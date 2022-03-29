@@ -68,7 +68,7 @@
 	<!-- 这里默认获取岗位职务角色为 该角色的用户  -->
     <select id="getByUserId" parameterType="java.lang.String" resultMap="Role">
         SELECT role.* from org_role role
-        left join org_relation relation on role.id_ = relation.role_id_ 
+        left join org_relation relation on role.id_ = relation.group_id_ and relation.type_='userRole'
         where enabled_ = 1 and relation.status_ =1 
         and relation.user_id_ = #{userId}
     </select>

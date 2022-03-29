@@ -90,7 +90,7 @@
     <select id="getSystemByUser" parameterType="java.lang.String" resultMap="Subsystem">
 		SELECT distinct subSystem.* FROM sys_subsystem subSystem
 		left join sys_res_role resRole on subSystem.id_ = resRole.system_id_
-		left join org_relation relation on resRole.role_id_ = relation.role_id_
+		left join org_relation relation on resRole.role_id_ = relation.group_id_ and relation.type_='userRole'
 		where subSystem.enabled_=1 and relation.user_id_= #{userId}   
 	</select>
 

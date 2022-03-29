@@ -250,8 +250,10 @@
                 userActiveStatus,max(userCreateTime) as userCreateTime from (
             </if>
         </if>
-        SELECT distinct relation.*,WM_CONCAT(tgroup.name_) over (partition by USER_ID_ order by tuser.CREATE_TIME_
-        desc,IS_MASTER_ desc) as groupName,tuser.fullname_ userName,tuser.account_ userAccount,tuser.mobile_
+        SELECT distinct relation.*,
+--         WM_CONCAT(tgroup.name_) over (partition by USER_ID_ order by tuser.CREATE_TIME_ desc,IS_MASTER_ desc) as groupName,
+        tgroup.name_ as groupName,
+        tuser.fullname_ userName,tuser.account_ userAccount,tuser.mobile_
         mobile,tuser.sn_ sn,role.name_ roleName,tuser.status_ as userStatus,tpost.id_ as postId,tpost.name_ as
         postName,tuser.active_status_ as userActiveStatus,tuser.CREATE_TIME_ as userCreateTime
         FROM org_relation relation

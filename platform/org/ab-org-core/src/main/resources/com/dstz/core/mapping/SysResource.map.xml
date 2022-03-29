@@ -90,7 +90,7 @@
     <select id="getBySystemAndUser" resultMap="SysResource">
 		SELECT distinct res.* FROM sys_resource res
 		left join sys_res_role resRole on res.id_=resRole.res_id_
-		left join org_relation userRole on userRole.role_id_ = resRole.role_id_
+		left join org_relation userRole on resRole.role_id_ =userRole.group_id_ and userRole.type_='userRole'
 		where res.system_id_=#{systemId}  
 		and userRole.user_id_=#{userId} and  userRole.status_ = '1'
 		order by res.sn_ asc, res.id_ asc

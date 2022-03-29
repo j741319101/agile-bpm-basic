@@ -74,6 +74,8 @@ public class DefaultIdentity implements SysIdentity<DefaultIdentity> {
 		this.id = user.getUserId();
 		this.name = user.getFullname();
 		this.type = TYPE_USER;
+        this.sn = user.getSn() == null ? -1 : user.getSn();
+        this.orgId = user.getOrgId();
 	}
 
 	public void setId(String id) {
@@ -110,7 +112,7 @@ public class DefaultIdentity implements SysIdentity<DefaultIdentity> {
 
 	@Override
 	public String getOrgId() {
-		return null;
+		return this.orgId;
 	}
 
 	@Override

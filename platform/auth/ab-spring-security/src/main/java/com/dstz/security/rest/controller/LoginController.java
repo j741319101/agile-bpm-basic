@@ -56,9 +56,10 @@ public class LoginController extends ControllerTools {
         }
         if (StringUtil.isEmpty(password)) {
             throw new BusinessMessage("密码不能为空", PlatFormStatusCode.LOGIN_ERROR);
-        }else {
-            password = EncryptUtil.encryptSha256(password);
         }
+//        else {
+//            password = EncryptUtil.encryptSha256(password);
+//        }
 
         try {
         	// 用security 登录机制处理下

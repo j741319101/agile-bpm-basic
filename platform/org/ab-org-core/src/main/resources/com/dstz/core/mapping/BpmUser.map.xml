@@ -143,7 +143,9 @@
     <select id="getUserOrgInfos" parameterType="java.util.Map" resultType="com.dstz.org.api.model.dto.BpmUserDTO">
         SELECT
         tuser.ID_ userId,
-        case when (trel.SN_ is not null) then trel.SN_ else tuser.sn_ end as userSn,
+         case when (trel.SN_ is not null) then trel.SN_
+              when (trel.SN_ is null and tuser.sn_ is null ) then '-1'
+             else tuser.sn_ end as userSn,
         tgroup.ID_ AS orgId,
         tgroup.NAME_ AS orgName,
         tgroup.TYPE_ as  orgType,

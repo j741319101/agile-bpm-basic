@@ -96,6 +96,6 @@ public class BusinessPermissionService implements IBusinessPermissionService
 		}
 
 
-		ThreadMapUtil.remove("cn.gwssi.ecloudbpm.sys.permission.impl.GroupPermission");
+		ThreadMapUtil.remove("com.dstz.sys.permission.impl.GroupPermission");
 	}
 }
